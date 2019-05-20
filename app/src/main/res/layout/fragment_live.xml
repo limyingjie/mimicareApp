@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/startButton"
+        android:text="Start Exercise"
+        android:textSize="30sp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:progress="0"
+        android:layout_below="@id/startButton"
+        android:max="10"/>
+
+    <TextView
+        android:id="@+id/progressText"
+        android:layout_below="@+id/progressBar"
+        android:lines="2"
+        android:maxLines="3"
+        android:singleLine="false"
+        android:text="Please start an exercise~"
+        android:textSize="20sp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/feet" />
+
+    <ImageView
+        android:id="@+id/feet"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/foot"
+        android:layout_alignParentBottom="true"
+        />
+
+    <TextView
+        android:id="@+id/p0"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:background="@drawable/circle"
+        android:textSize="20dp"
+        android:text="0"
+        android:layout_marginTop="320dp"
+        android:layout_marginLeft="290dp"
+        android:layout_alignTop="@+id/feet"
+        />
+
+    <TextView
+        android:id="@+id/p1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:background="@drawable/circle"
+        android:textSize="20dp"
+        android:text="0"
+        android:layout_marginTop="110dp"
+        android:layout_marginLeft="270dp"
+        android:layout_alignTop="@+id/feet"
+        />
+
+    <TextView
+        android:id="@+id/p2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:background="@drawable/circle"
+        android:textSize="20dp"
+        android:text="0"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="250dp"
+        android:layout_alignTop="@+id/feet"
+        />
+
+    <TextView
+        android:id="@+id/p3"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:background="@drawable/circle"
+        android:textSize="20dp"
+        android:text="0"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="330dp"
+        android:layout_alignTop="@+id/feet"
+        />
+
+    <TextView
+        android:id="@+id/p4"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:background="@drawable/circle"
+        android:textSize="20dp"
+        android:text="0"
+        android:layout_marginTop="145dp"
+        android:layout_marginLeft="335dp"
+        android:layout_alignTop="@+id/feet"
+        />
+
+    <TextView
+        android:id="@+id/p5"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:background="@drawable/circle"
+        android:textSize="20dp"
+        android:text="0"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="325dp"
+        android:layout_alignTop="@+id/feet"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/speechleft"
+        android:layout_width="200dp"
+        android:layout_height="180dp"
+        android:background="@drawable/speechleft"
+        android:visibility="invisible"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:text="hello"
+        android:layout_above="@+id/smileyfeet"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="-40dp"
+        />
+
+    <TextView
+        android:id="@+id/speechright"
+        android:layout_width="250dp"
+        android:layout_height="400dp"
+        android:background="@drawable/speechright"
+        android:visibility="invisible"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:text="hello"
+        android:layout_above="@+id/smileyfeet"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="-40dp"
+        />
+
+    <ImageView
+        android:id="@+id/smileyfeet"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:src="@drawable/smileyfeet"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/golive"
+        />
+
+    <Button
+        android:id="@+id/golive"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:textSize="40dp"
+        android:text="Start!"
+        android:onClick="goLive"
+        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="40dp"
+        />
+
+</RelativeLayout>
