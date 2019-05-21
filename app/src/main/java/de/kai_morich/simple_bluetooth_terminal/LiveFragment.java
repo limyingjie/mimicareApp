@@ -40,6 +40,9 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private int numSteps = 0;
     private boolean inLowState = false;
 
+    Thread mockDataThread;
+    boolean isMocking = true;
+
     public LiveFragment() {
     }
 
@@ -75,6 +78,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     public void onStop() {
         if(service != null && !getActivity().isChangingConfigurations())
             service.detach();
+//        if (isMocking) mockDataThread.stop();
         super.onStop();
     }
 
@@ -126,6 +130,11 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         pressureTexts[3] = view.findViewById(R.id.p3);
         pressureTexts[4] = view.findViewById(R.id.p4);
         pressureTexts[5] = view.findViewById(R.id.p5);
+
+        if (isMocking) {
+            mockDataThread = new Thread(new MockDataRunnable());
+            mockDataThread.start();
+        }
 
         Button button = (Button) view.findViewById(R.id.startButton);
         button.setOnClickListener(new View.OnClickListener()
@@ -275,6 +284,36 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     public void onSerialIoError(Exception e) {
         status("connection lost: " + e.getMessage());
         disconnect();
+    }
+
+    class MockDataRunnable implements Runnable {
+        boolean isActive = true;
+
+        private void sleep(long millis) {
+            try {
+                Thread.sleep(millis);
+            } catch (InterruptedException e) {
+                Log.e("MOCK", e.getMessage());
+            }
+        }
+
+        @Override
+        public void run() {
+            sleep(1000);
+
+            Log.i("MOCK", "Mock data thread is started");
+            while (isActive) {
+                int[] data;
+                if (System.currentTimeMillis()%2000 < 1000) {
+                    data = new int[] {0,200,400,600,800,1000};
+                } else {
+                    data = new int[] {0,0,0,0,0,0};
+                }
+                process_data(data);
+                sleep(100);
+            }
+            Log.i("MOCK", "Mock data thread is stopping");
+        }
     }
 
 }
