@@ -24,11 +24,10 @@ import java.util.Locale;
 
 public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
 
-    private enum Connected { False, Pending, True }
+    private enum Connected {False, Pending, True}
 
     private String deviceAddress;
 
-    private StringBuffer buffer = new StringBuffer();
     private TextView[] pressureTexts = new TextView[6];
 
     private SerialSocket socket;
@@ -40,7 +39,10 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private int numSteps = 0;
     private boolean inLowState = false;
 
+    BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
+
     Thread mockDataThread;
+    MockDataRunnable mockDataRunnable;
     boolean isMocking = true;
 
     public LiveFragment() {
@@ -68,7 +70,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     @Override
     public void onStart() {
         super.onStart();
-        if(service != null)
+        if (service != null)
             service.attach(this);
         else
             getActivity().startService(new Intent(getActivity(), SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
@@ -76,13 +78,14 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     @Override
     public void onStop() {
-        if(service != null && !getActivity().isChangingConfigurations())
+        if (service != null && !getActivity().isChangingConfigurations())
             service.detach();
-//        if (isMocking) mockDataThread.stop();
+        if (isMocking) mockDataRunnable.isActive = false;
         super.onStop();
     }
 
-    @SuppressWarnings("deprecation") // onAttach(context) was added with API 23. onAttach(activity) works for all API versions
+    @SuppressWarnings("deprecation")
+    // onAttach(context) was added with API 23. onAttach(activity) works for all API versions
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -91,14 +94,17 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     @Override
     public void onDetach() {
-        try { getActivity().unbindService(this); } catch(Exception ignored) {}
+        try {
+            getActivity().unbindService(this);
+        } catch (Exception ignored) {
+        }
         super.onDetach();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(initialStart && service !=null) {
+        if (initialStart && service != null) {
             initialStart = false;
             getActivity().runOnUiThread(this::connect);
         }
@@ -107,7 +113,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         service = ((SerialService.SerialBinder) binder).getService();
-        if(initialStart && isResumed()) {
+        if (initialStart && isResumed()) {
             initialStart = false;
             getActivity().runOnUiThread(this::connect);
         }
@@ -132,65 +138,45 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         pressureTexts[5] = view.findViewById(R.id.p5);
 
         if (isMocking) {
-            mockDataThread = new Thread(new MockDataRunnable());
+            mockDataRunnable = new MockDataRunnable();
+            mockDataThread = new Thread(mockDataRunnable);
             mockDataThread.start();
         }
 
-        Button button = (Button) view.findViewById(R.id.startButton);
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                startExercise();
-            }
-        });
+        Button button = view.findViewById(R.id.startButton);
+        button.setOnClickListener(v -> startExercise());
         return view;
     }
 
-    private void startExercise(){
+    private void startExercise() {
         inExercise = true;
         numSteps = 0;
         inLowState = false;
         updateProgress();
     }
 
-    private void updateProgress(){
+    private void updateProgress() {
         TextView tv = getView().findViewById(R.id.progressText);
-        tv.setText(String.format("%d steps", numSteps));
+        getActivity().runOnUiThread(() -> tv.setText(String.format("%d steps", numSteps)));
         ProgressBar pb = getView().findViewById(R.id.progressBar);
         pb.setProgress(numSteps);
-        if (numSteps >= pb.getMax()){
-            tv.setText("Congratulations! You've completed an exercise!");
+        if (numSteps >= pb.getMax()) {
+            getActivity().runOnUiThread(() -> tv.setText("Congratulations! You've completed an exercise!"));
+
         }
     }
 
-    private int[] get_line_data(String line){
-        String[] splitLine = line.split(",");
-        if (splitLine.length == 6){
-            int[] data = new int[6];
-            for (int i = 0; i < 6; i++) {
-                data[i] = Integer.parseInt(splitLine[i]);
-            }
-            return data;
-        }
-        return null;
-    }
-
-    private void process_data(int[] pressureData){
-        if (inExercise){
-            boolean nowInLowState = pressureData[4]>200;
-            if (inLowState && !nowInLowState){
+    private void process_data(int[] pressureData) {
+        if (inExercise) {
+            boolean nowInLowState = pressureData[4] > 200;
+            if (inLowState && !nowInLowState) {
                 numSteps += 1;
                 updateProgress();
             }
             inLowState = nowInLowState;
         }
 
-        for (int i = 0; i < 6; i++) {
-            int ScaledPressure = pressureData[i]/200;
-            pressureTexts[i].setText(String.format(Locale.US, "%d", ScaledPressure));
-        }
+        updatePressureText(pressureData);
     }
 
     /*
@@ -220,44 +206,18 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         socket = null;
     }
 
-    private void receive(byte[] data) {
-        String strData = new String(data);
-        buffer.append(strData.replaceAll("\\s+",""));
-
-        String[] lines = buffer.toString().split("#");
-        if (lines.length == 0){
-            return;
-        }
-
-        int[] lineData;
-
-        //Check if last line is complete. Print if is.
-        lineData = get_line_data(lines[lines.length-1]);
-        if (lineData != null){
-            process_data(lineData);
-            buffer.setLength(0);
-            Log.d("pos61", (String.format(Locale.US, "%d < %s", lineData[5], lines[lines.length-1])));
-            return;
-        }
-
-        //Check if 2nd last line exists is complete. Print if is. (if it exists and is not complete, it must also be first line. so ignore.)
-        if (lines.length < 2) {
-            return;
-        }
-        lineData = get_line_data(lines[lines.length-2]);
-        if (lineData != null){
-            process_data(lineData);
-            buffer.setLength(0);
-            Log.d("pos62", (String.format(Locale.US, "%d < %s", lineData[5], lines[lines.length-2])));
-            return;
-        }
-    }
-
     private void status(String str) {
         /*SpannableStringBuilder spn = new SpannableStringBuilder(str+'\n');
         spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         receiveText.append(spn);*/
         Log.d("L", str);
+    }
+
+    private void updatePressureText(int[] pressureData) {
+        for (int i = 0; i < 6; i++) {
+            int ScaledPressure = pressureData[i] / 200;
+            pressureTexts[i].setText(String.format(Locale.US, "%d", ScaledPressure));
+        }
     }
 
     /*
@@ -277,7 +237,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     @Override
     public void onSerialRead(byte[] data) {
-        receive(data);
+        process_data(bluetoothDataHandler.receive(data));
     }
 
     @Override
@@ -304,10 +264,10 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             Log.i("MOCK", "Mock data thread is started");
             while (isActive) {
                 int[] data;
-                if (System.currentTimeMillis()%2000 < 1000) {
-                    data = new int[] {0,200,400,600,800,1000};
+                if (System.currentTimeMillis() % 1000 < 500) {
+                    data = new int[]{0, 200, 400, 600, 800, 1000};
                 } else {
-                    data = new int[] {0,0,0,0,0,0};
+                    data = new int[]{0, 0, 0, 0, 0, 0};
                 }
                 process_data(data);
                 sleep(100);
