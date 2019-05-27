@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
@@ -38,6 +39,8 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private boolean inExercise = false;
     private int numSteps = 0;
     private boolean inLowState = false;
+
+    StepChecker stepChecker = new StepChecker(new int[]{0, 200, 400, 600, 800, 1000});
 
     BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
@@ -167,8 +170,15 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     }
 
     private void process_data(int[] pressureData) {
+        Log.i("LiveFragment", Arrays.toString(pressureData));
+
+        boolean nowInLowState = pressureData[4] > 200;
+        if (nowInLowState) {
+            String result = stepChecker.checkStep(pressureData);
+            Log.i("LiveFragment", result);
+        }
+
         if (inExercise) {
-            boolean nowInLowState = pressureData[4] > 200;
             if (inLowState && !nowInLowState) {
                 numSteps += 1;
                 updateProgress();
