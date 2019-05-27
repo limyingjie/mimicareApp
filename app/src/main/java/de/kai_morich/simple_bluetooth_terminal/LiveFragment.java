@@ -260,20 +260,14 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         @Override
         public void run() {
             sleep(1000);
-
+            MockStepGenerator mockStepGenerator = new MockStepGenerator();
             Log.i("MOCK", "Mock data thread is started");
             while (isActive) {
-                int[] data;
-                if (System.currentTimeMillis() % 1000 < 500) {
-                    data = new int[]{0, 200, 400, 600, 800, 1000};
-                } else {
-                    data = new int[]{0, 0, 0, 0, 0, 0};
-                }
+                int[] data = mockStepGenerator.nextRandom();
                 process_data(data);
-                sleep(100);
+                sleep(500);
             }
             Log.i("MOCK", "Mock data thread is stopping");
         }
     }
-
 }
