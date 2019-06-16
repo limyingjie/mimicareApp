@@ -5,10 +5,14 @@ import android.util.Log;
 import java.util.Locale;
 
 public class BluetoothDataHandler {
+    private final String TAG = "BluetoothDataHandler";
+
     private StringBuffer buffer = new StringBuffer();
 
     public int[] receive(byte[] data) {
         String strData = new String(data);
+        Log.d(TAG, "message string received: " + strData);
+
         buffer.append(strData.replaceAll("\\s+", ""));
 
         String[] lines = buffer.toString().split("#");

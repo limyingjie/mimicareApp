@@ -172,6 +172,10 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private void process_data(int[] pressureData) {
         Log.i("LiveFragment", Arrays.toString(pressureData));
 
+        if (pressureData == null) {
+            return;
+        }
+
         boolean nowInLowState = pressureData[4] > 200;
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
