@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="newline_names">
+        <item>LF</item>
+        <item>CR+LF</item>
+    </string-array>
+    <string-array name="newline_values">
+        <item>\u000a</item>
+        <item>\u000d\u000a</item>
+    </string-array>
+    <string-array name="assignments">
+        <item>assignment 1</item>
+        <item>assignment 2</item>
+        <item>assignment 3</item>
+        <item>assignment 4</item>
+        <item>assignment 5</item>
+        <item>assignment 6</item>
+        <item>assignment 7</item>
+        <item>assignment 8</item>
+        <item>assignment 9</item>
+        <item>assignment 10</item>
+    </string-array>
+</resources>
