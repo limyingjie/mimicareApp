@@ -1,0 +1,17 @@
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    
+    <style name="ButtonNavigation">
+        <item name="itemIconTint">@color/bottom_nav_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_selector</item>
+        <item name="itemBackground">@color/colorMainBackground</item>
+        <item name="labelVisibilityMode">labeled</item>
+    </style>
+<style name="TextAppearanceTitle" parent="TextAppearance.AppCompat.Title">
+    <item name="android:textColor">@color/colorTextTitle</item>
+</style>
+</resources>
