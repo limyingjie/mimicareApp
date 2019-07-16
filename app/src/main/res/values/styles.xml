@@ -8,10 +8,13 @@
     <style name="ButtonNavigation">
         <item name="itemIconTint">@color/bottom_nav_selector</item>
         <item name="itemTextColor">@color/bottom_nav_selector</item>
-        <item name="itemBackground">@color/colorMainBackground</item>
         <item name="labelVisibilityMode">labeled</item>
     </style>
 <style name="TextAppearanceTitle" parent="TextAppearance.AppCompat.Title">
     <item name="android:textColor">@color/colorTextTitle</item>
 </style>
+
+    <style name="TextProfileSetting">
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>
