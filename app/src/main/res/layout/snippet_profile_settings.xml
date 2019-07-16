@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/setting_margin_horizontal"
+        android:layout_marginEnd="@dimen/setting_margin_horizontal"
+        android:paddingTop="@dimen/setting_padding_vertical"
+        android:paddingBottom="@dimen/setting_padding_vertical"
+        android:paddingStart="@dimen/setting_padding_horizontal"
+        android:paddingEnd="@dimen/setting_padding_horizontal"
+        style="@style/TextProfileSetting"
+        android:background="@drawable/grey_bottom_border"
+        android:text="@string/setting" />
+
+</merge>

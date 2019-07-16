@@ -15,5 +15,8 @@
     <string name="data">Data</string>
     <string name="record">Record</string>
     <string name="test">Test</string>
+    <string name="default_name">Invisible Man</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="setting">Setting</string>
 
 </resources>

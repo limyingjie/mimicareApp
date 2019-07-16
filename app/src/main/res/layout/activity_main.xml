@@ -55,6 +55,7 @@
             android:layout_gravity="bottom"
             android:elevation="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/grey_top_border"
             style="@style/ButtonNavigation"
             app:menu="@menu/menu_bottom_nav" />
 
