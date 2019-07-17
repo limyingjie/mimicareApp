@@ -44,6 +44,7 @@ public class DevicesFragment extends ListFragment {
     private BroadcastReceiver bleDiscoveryBroadcastReceiver;
     private IntentFilter bleDiscoveryIntentFilter;
 
+    // Need to understand this fragment in detail in order to be able to manage its lifecycle
     public DevicesFragment() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bleDiscoveryBroadcastReceiver = new BroadcastReceiver() {

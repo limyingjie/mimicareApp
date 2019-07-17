@@ -23,19 +23,21 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
     private Context context;
 
     public AssignmentRecyclerAdapter(ArrayList<String> mAssignment, OnClickListener onClickListener,Context context) {
+        Log.d(TAG, "AssignmentRecyclerAdapter: Called");
         this.mAssignment = mAssignment;
         this.onClickListener = onClickListener;
         this.context = context;
+        mSparseBooleanArray = new SparseBooleanArray();
     }
 
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        Log.d(TAG, "onCreateViewHolder: Called");
         // recycling the viewHolder and put them in the position they are supposed to be
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.assignment_list_item,viewGroup,false);
         ViewHolder holder = new ViewHolder(view,onClickListener,context);
-        mSparseBooleanArray = new SparseBooleanArray();
         return holder;
     }
 
@@ -52,6 +54,15 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
         }
     }
 
+    public SparseBooleanArray getSelectedPosition(){
+        return mSparseBooleanArray;
+    }
+
+    public void setSelectedPosition(SparseBooleanArray sparseBooleanArray){
+        // rearrange the array
+
+        mSparseBooleanArray = sparseBooleanArray;
+    }
     @Override
     public int getItemCount() {
         return mAssignment.size();
@@ -83,6 +94,7 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
                 mSparseBooleanArray.put(getAdapterPosition(),true);
                 cardView.setStrokeColor(context.getResources().getColor(R.color.colorPrimary));
             }
+            Log.d(TAG, "onClick: "+mSparseBooleanArray);
             onClickListener.onClickListener(getAdapterPosition());
         }
     }

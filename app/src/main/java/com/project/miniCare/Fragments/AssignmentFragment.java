@@ -8,12 +8,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.project.miniCare.Adapters.AssignmentRecyclerAdapter;
 import com.project.miniCare.MainActivity;
@@ -35,6 +37,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: Called");
         setHasOptionsMenu(true);
     }
 
@@ -50,7 +53,9 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "onActivityCreated: Called");
         ((MainActivity)getActivity()).changeTitle(R.string.assignment);
+        
     }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -63,6 +68,9 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         switch (item.getItemId()){
             case R.id.item_add:
                 add();
+                break;
+            case R.id.item_delete:
+                remove(mAssignmentRecyclerAdapter.getSelectedPosition());
         }
         return true;
     }
@@ -74,8 +82,10 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
 
     private void initializeText(){
         Log.d(TAG, "initializeText: Called!");
-        for (int i=0; i < 10; i++){
-            mAssignment.add("Assignment " + i);
+        if (mAssignment.isEmpty()) {
+            for (int i = 0; i < 10; i++) {
+                mAssignment.add("Assignment " + i);
+            }
         }
     }
 
@@ -86,7 +96,42 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
 
     private void remove(int position){
         mAssignment.remove(position);
+        SparseBooleanArray sparseBooleanArray = mAssignmentRecyclerAdapter.getSelectedPosition();
+        sparseBooleanArray.delete(position);
+        Log.d("AssignmentRecyclerAdapt", "get "+sparseBooleanArray);
+        // empty sparseBooleanArray
+        SparseBooleanArray outputArray = new SparseBooleanArray();
+        // rearrange the array
+        for (int i = 0; i < sparseBooleanArray.size(); i++){
+            int key = sparseBooleanArray.keyAt(i);
+            // -1 position to all key > position
+            if (key > position){
+                outputArray.put(key-1,true);
+            }
+            else{
+                outputArray.put(key,true);
+            }
+        }
+        Log.d("AssignmentRecyclerAdapt", "set "+outputArray);
+        mAssignmentRecyclerAdapter.setSelectedPosition(outputArray);
         mAssignmentRecyclerAdapter.notifyItemRemoved(position);
+    }
+
+    private void remove(SparseBooleanArray sparseBooleanArray){
+        if (sparseBooleanArray.size() == 0) {
+            Toast.makeText(getActivity(),"No item is selected",Toast.LENGTH_SHORT).show();
+        }
+        else {
+            // remove from the back so that the array does not get error
+            for (int i = sparseBooleanArray.size()-1; i >= 0; i--) {
+                int key = sparseBooleanArray.keyAt(i);
+                Log.d("AssignmentRecyclerAdapt", "remove: "+key);
+                mAssignment.remove(key);
+            }
+            sparseBooleanArray.clear();
+            mAssignmentRecyclerAdapter.setSelectedPosition(sparseBooleanArray);
+            mAssignmentRecyclerAdapter.notifyDataSetChanged();
+        }
     }
 
     private void add(){

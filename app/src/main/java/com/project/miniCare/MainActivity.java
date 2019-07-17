@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     public String device;
     public Toolbar toolbar;
+    private BottomNavigationView bottomNav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,27 +36,22 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
-
-        BottomNavigationView bottomNav =findViewById(R.id.bottom_navigation);
+        bottomNav =findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
+
 
         //possibly use https://github.com/ittianyu/BottomNavigationViewEx instead
         //remove padding in bottom navigation
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNav.getChildAt(0);
-        for (int i = 0; i < menuView.getChildCount(); i++) {
-            BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
-            View activeLabel = item.findViewById(R.id.largeLabel);
-            if (activeLabel instanceof TextView) {
-                activeLabel.setPadding(0, 0, 0, 0);
-            }
-    }
+        removePaddingFromNavigation();
+
+
+        // code from Simple BLE
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new DevicesFragment(), "devices").commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new DevicesFragment()).commit();
         else
             onBackStackChanged();
     }
-
 
     @Override
     public void onBackStackChanged() {
@@ -116,4 +113,14 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     }
 
+    private void removePaddingFromNavigation(){
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNav.getChildAt(0);
+        for (int i = 0; i < menuView.getChildCount(); i++) {
+            BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
+            View activeLabel = item.findViewById(R.id.largeLabel);
+            if (activeLabel instanceof TextView) {
+                activeLabel.setPadding(0, 0, 0, 0);
+            }
+        }
+    }
 }
