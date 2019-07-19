@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     public String device;
     public Toolbar toolbar;
-    private BottomNavigationView bottomNav;
+    public BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

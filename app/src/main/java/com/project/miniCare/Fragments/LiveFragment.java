@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.project.miniCare.MainActivity;
 import com.project.miniCare.Utils.BluetoothDataHandler;
 import com.project.miniCare.Utils.MockStepGenerator;
 import com.project.miniCare.R;
@@ -92,6 +94,10 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         if (service != null && !getActivity().isChangingConfigurations())
             service.detach();
         if (isMocking) mockDataRunnable.isActive = false;
+
+        // show the action bar and bottomNav again
+        ((MainActivity)getActivity()).getSupportActionBar().show();
+        ((MainActivity)getActivity()).bottomNav.setVisibility(View.VISIBLE);
         super.onStop();
     }
 
@@ -119,6 +125,10 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             initialStart = false;
             getActivity().runOnUiThread(this::connect);
         }
+        // hide actionBar and bottomNav
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
+        ((MainActivity)getActivity()).bottomNav.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -224,7 +234,9 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         Log.d("L SC", "disconnect");
         connected = Connected.False;
         service.disconnect();
-        socket.disconnect();
+        if (socket!=null){
+            socket.disconnect();
+        }
         socket = null;
     }
 

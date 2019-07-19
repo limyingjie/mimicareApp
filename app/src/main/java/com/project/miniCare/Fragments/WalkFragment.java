@@ -54,7 +54,7 @@ public class WalkFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager){
         mtabFragmentAdapter.addFragment(new MainMenuFragment(),"Test");
         mtabFragmentAdapter.addFragment(new FragmentRecord(),"Record");
-        mtabFragmentAdapter.addFragment(new FragmentData(),"Data");
+        mtabFragmentAdapter.addFragment(new DataTerminalFragment(),"Data");
         viewPager.setAdapter(mtabFragmentAdapter);
     }
 
