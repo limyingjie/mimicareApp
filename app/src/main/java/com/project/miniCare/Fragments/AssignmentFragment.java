@@ -34,11 +34,13 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     private ArrayList<String> mAssignment = new ArrayList<>();
     private AssignmentRecyclerAdapter mAssignmentRecyclerAdapter;
 
+    // save the fragment and thee bundle
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: Called");
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     @Nullable

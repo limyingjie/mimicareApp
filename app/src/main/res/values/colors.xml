@@ -6,7 +6,7 @@
 
     <color name="colorRecieveText">#00FF00</color>
     <color name="colorSendText">#82CAFF</color>
-    <color name="colorStatusText">#FFDB58</color>
+    <color name="colorStatusText">#3D5AFE</color>
     <color name="colorMainBackground">#FFFFFF</color>
     <color name="colorText">#000000</color>
     <color name="colorSecondaryText">#696969</color>

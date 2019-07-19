@@ -75,11 +75,13 @@ public class DataTerminalFragment extends Fragment implements ServiceConnection,
         if(service != null)
             service.attach(this);
         else
+            // start the Serial Service
             getActivity().startService(new Intent(getActivity(), SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
     }
 
     @Override
     public void onStop() {
+        // stop the service when the fragment is onStop
         if(service != null && !getActivity().isChangingConfigurations())
             service.detach();
         super.onStop();
@@ -88,18 +90,22 @@ public class DataTerminalFragment extends Fragment implements ServiceConnection,
     @SuppressWarnings("deprecation") // onAttach(context) was added with API 23. onAttach(activity) works for all API versions
     @Override
     public void onAttach(Activity activity) {
+        // bind the service to the activity when the fragment attached
+        // so when the activity is destroyed the service also get destroyed i think
         super.onAttach(activity);
         getActivity().bindService(new Intent(getActivity(), SerialService.class), this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onDetach() {
+        // unbind the service when the fragment is detached
         try { getActivity().unbindService(this); } catch(Exception ignored) {}
         super.onDetach();
     }
 
     @Override
     public void onResume() {
+        // when the fragment is continued,
         super.onResume();
         if(initialStart && service !=null) {
             initialStart = false;
@@ -154,7 +160,9 @@ public class DataTerminalFragment extends Fragment implements ServiceConnection,
     private void disconnect() {
         connected = Connected.False;
         service.disconnect();
-        socket.disconnect();
+        if (socket!=null){
+            socket.disconnect();
+        }
         socket = null;
     }
 

@@ -126,6 +126,7 @@ public class SerialService extends Service implements SerialListener {
         listener = null;
     }
 
+    // create notification inside the android
     private void createNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel nc = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, "Background service", NotificationManager.IMPORTANCE_LOW);
