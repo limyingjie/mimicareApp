@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Initialize toolbar and disable toolbar title
+        //Initialize toolbar so that it can be called in other fragment and remove the Actionbar title
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

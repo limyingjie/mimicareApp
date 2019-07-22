@@ -35,7 +35,7 @@ public class WalkFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
     }
 
     @Override
@@ -61,6 +61,6 @@ public class WalkFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+        ((MainActivity)getActivity()).getSupportActionBar().show();
     }
 }

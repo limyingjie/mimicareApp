@@ -20,4 +20,10 @@
         <item>assignment 9</item>
         <item>assignment 10</item>
     </string-array>
+    <string-array name="settings">
+        <item>Profile</item>
+        <item>Layout</item>
+        <item>Help</item>
+        <item>FAQ</item>
+    </string-array>
 </resources>

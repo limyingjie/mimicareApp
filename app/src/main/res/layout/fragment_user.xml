@@ -63,7 +63,10 @@
 
 
         </android.support.constraint.ConstraintLayout>
-        <include layout="@layout/snippet_profile_settings"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycle_settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
 </ScrollView>

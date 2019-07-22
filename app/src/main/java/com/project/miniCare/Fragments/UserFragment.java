@@ -4,16 +4,27 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
+import com.project.miniCare.Utils.SimpleToast;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class UserFragment extends Fragment{
-    MainActivity mainActivity;
+    private static final String TAG = "UserFragment";
+    RecyclerView recyclerView;
+    List<String> settings;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,14 +35,26 @@ public class UserFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user,container,false);
+        settings = Arrays.asList(getResources().getStringArray(R.array.settings));
 
+        recyclerView = view.findViewById(R.id.recycle_settings);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity()){
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),linearLayoutManager.getOrientation()));
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(new settingsRecycleViewAdapter(settings));
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
     }
 
     @Override
@@ -43,6 +66,47 @@ public class UserFragment extends Fragment{
     @Override
     public void onStop() {
         super.onStop();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+        ((MainActivity)getActivity()).getSupportActionBar().show();
+    }
+
+    // recycleView adapter
+    class settingsRecycleViewAdapter extends RecyclerView.Adapter<settingsRecycleViewAdapter.ViewHolder>{
+        List<String> msettings;
+
+        public settingsRecycleViewAdapter(List<String> settings){
+            this.msettings = settings;
+        }
+
+        @NonNull
+        @Override
+        public settingsRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.snippet_profile_settings,viewGroup,false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull settingsRecycleViewAdapter.ViewHolder viewHolder, int i) {
+            viewHolder.settingTextView.setText(msettings.get(i));
+        }
+
+        @Override
+        public int getItemCount() {
+            return msettings.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            TextView settingTextView;
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                settingTextView = itemView.findViewById(R.id.setting_textView);
+                settingTextView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Called");
+                SimpleToast.show(getActivity(),"Clicked :" + msettings.get(getAdapterPosition()),Toast.LENGTH_SHORT);
+            }
+        }
     }
 }

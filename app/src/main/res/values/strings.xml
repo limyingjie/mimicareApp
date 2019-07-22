@@ -18,5 +18,7 @@
     <string name="default_name">Invisible Man</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="setting">Setting</string>
+    <string name="create">Create account</string>
+    <string name="login">Sign In</string>
 
 </resources>
