@@ -11,12 +11,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 import com.project.miniCare.Utils.SimpleToast;
+import com.project.miniCare.Utils.UniversalImageLoader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +28,8 @@ public class UserFragment extends Fragment{
     private static final String TAG = "UserFragment";
     RecyclerView recyclerView;
     List<String> settings;
+    ImageView profilePhoto;
+    UniversalImageLoader universalImageLoader;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +40,9 @@ public class UserFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user,container,false);
+        profilePhoto = view.findViewById(R.id.profile_pic);
+        initImageLoader();
+        setProfileImage();
         settings = Arrays.asList(getResources().getStringArray(R.array.settings));
 
         recyclerView = view.findViewById(R.id.recycle_settings);
@@ -69,6 +77,16 @@ public class UserFragment extends Fragment{
         ((MainActivity)getActivity()).getSupportActionBar().show();
     }
 
+    private void initImageLoader(){
+        universalImageLoader = new UniversalImageLoader(getActivity());
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+    private void setProfileImage(){
+        Log.d(TAG, "setProfileImage: Called");
+        String imageUrl = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/01/31/14/panda-bamboo.jpg";
+        universalImageLoader.setImage(imageUrl,profilePhoto,null,"");
+
+    }
     // recycleView adapter
     class settingsRecycleViewAdapter extends RecyclerView.Adapter<settingsRecycleViewAdapter.ViewHolder>{
         List<String> msettings;
