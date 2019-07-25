@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.BluetoothLeScanner;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.project.miniCare.LiveActivity;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 
@@ -243,11 +243,17 @@ public class DevicesFragment extends ListFragment {
         BluetoothDevice device = listItems.get(position-1);
         // hack
         ((MainActivity) getActivity()).device = device.getAddress();
+
+        // send to fragment
         Bundle args = new Bundle();
         args.putString("device", device.getAddress());
-        Fragment fragment = new LiveFragment();
-        fragment.setArguments(args);
-        getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "menu").addToBackStack(null).commit();
+        Fragment terminalFragment = new DataTerminalFragment();
+        terminalFragment.setArguments(args);
+
+        // send to activity
+        Intent intent = new Intent(getActivity(), LiveActivity.class);
+        intent.putExtra("device",device.getAddress());
+        startActivity(intent);
     }
 
     /**

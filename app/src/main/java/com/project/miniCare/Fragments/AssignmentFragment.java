@@ -1,5 +1,6 @@
 package com.project.miniCare.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,22 +9,23 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.project.miniCare.Adapters.AssignmentRecyclerAdapter;
+import com.project.miniCare.Data.Assignment;
+import com.project.miniCare.LiveActivity;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-public class AssignmentFragment extends Fragment implements AssignmentRecyclerAdapter.OnClickListener, AddDialog.onInputSelected {
+public class AssignmentFragment extends Fragment implements AssignmentRecyclerAdapter.OnClickListener,AddDialog.onInputSelected{
     private static final String TAG = "AssignmentFragment";
     Menu menu;
 
@@ -31,8 +33,12 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     RecyclerView recyclerView;
 
     //var
-    private ArrayList<String> mAssignment = new ArrayList<>();
+    private ArrayList<Assignment> mAssignments;
     private AssignmentRecyclerAdapter mAssignmentRecyclerAdapter;
+    private Random random;
+
+    public AssignmentFragment() {
+    }
 
     // save the fragment and thee bundle
     @Override
@@ -47,6 +53,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_assignment,container,false);
+        mAssignments = new ArrayList<>();
         initializeText();
         initRecyclerView(view);
         return view;
@@ -71,8 +78,6 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
             case R.id.item_add:
                 add();
                 break;
-            case R.id.item_delete:
-                remove(mAssignmentRecyclerAdapter.getSelectedPosition());
         }
         return true;
     }
@@ -80,60 +85,37 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public void onClickListener(int position) {
         Log.d(TAG, "onClickListener: Called");
+        Intent intent = new Intent(getActivity(), LiveActivity.class);
+        intent.putExtra("assignment",mAssignments.get(position));
+        startActivity(intent);
     }
 
     private void initializeText(){
         Log.d(TAG, "initializeText: Called!");
-        if (mAssignment.isEmpty()) {
-            for (int i = 0; i < 10; i++) {
-                mAssignment.add("Assignment " + i);
-            }
+        random = new Random();
+        int max = 100;
+        int min = 10;
+        String[] days = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
+        for (int i = 0; i < 5; i++){
+            int num = random.nextInt(max-min)+min;
+            int num_day = random.nextInt(6);
+            mAssignments.add(new Assignment(
+                    "Walk",
+                    num,
+                    random.nextInt(num),
+                    days[num_day]
+            ));
         }
     }
 
-    private void insert(String input){
-        mAssignment.add(input);
-        mAssignmentRecyclerAdapter.notifyItemInserted(mAssignment.size()-1);
+    private void insert(Assignment input){
+        mAssignments.add(input);
+        mAssignmentRecyclerAdapter.notifyItemInserted(mAssignments.size()-1);
     }
 
     private void remove(int position){
-        mAssignment.remove(position);
-        SparseBooleanArray sparseBooleanArray = mAssignmentRecyclerAdapter.getSelectedPosition();
-        sparseBooleanArray.delete(position);
-        Log.d("AssignmentRecyclerAdapt", "get "+sparseBooleanArray);
-        // empty sparseBooleanArray
-        SparseBooleanArray outputArray = new SparseBooleanArray();
-        // rearrange the array
-        for (int i = 0; i < sparseBooleanArray.size(); i++){
-            int key = sparseBooleanArray.keyAt(i);
-            // -1 position to all key > position
-            if (key > position){
-                outputArray.put(key-1,true);
-            }
-            else{
-                outputArray.put(key,true);
-            }
-        }
-        Log.d("AssignmentRecyclerAdapt", "set "+outputArray);
-        mAssignmentRecyclerAdapter.setSelectedPosition(outputArray);
+        mAssignments.remove(position);
         mAssignmentRecyclerAdapter.notifyItemRemoved(position);
-    }
-
-    private void remove(SparseBooleanArray sparseBooleanArray){
-        if (sparseBooleanArray.size() == 0) {
-            Toast.makeText(getActivity(),"No item is selected",Toast.LENGTH_SHORT).show();
-        }
-        else {
-            // remove from the back so that the array does not get error
-            for (int i = sparseBooleanArray.size()-1; i >= 0; i--) {
-                int key = sparseBooleanArray.keyAt(i);
-                Log.d("AssignmentRecyclerAdapt", "remove: "+key);
-                mAssignment.remove(key);
-            }
-            sparseBooleanArray.clear();
-            mAssignmentRecyclerAdapter.setSelectedPosition(sparseBooleanArray);
-            mAssignmentRecyclerAdapter.notifyDataSetChanged();
-        }
     }
 
     private void add(){
@@ -147,7 +129,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         recyclerView = view.findViewById(R.id.recycle_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mAssignmentRecyclerAdapter = new AssignmentRecyclerAdapter(mAssignment,this,getActivity());
+        mAssignmentRecyclerAdapter = new AssignmentRecyclerAdapter(mAssignments,this,getActivity());
 
         // add a divider between items
         /*
@@ -174,7 +156,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     };
 
     @Override
-    public void sendInput(String input) {
-        insert(input);
+    public void sendInput(String title, int target, String day) {
+        insert(new Assignment(title,target,0,day));
     }
 }

@@ -9,8 +9,8 @@
         <item>\u000d\u000a</item>
     </string-array>
     <string-array name="assignments">
-        <item>assignment 1</item>
-        <item>assignment 2</item>
+        <item>Walk 100 steps</item>
+        <item>Walk 50 steps</item>
         <item>assignment 3</item>
         <item>assignment 4</item>
         <item>assignment 5</item>

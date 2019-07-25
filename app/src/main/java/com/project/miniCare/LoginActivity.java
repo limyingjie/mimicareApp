@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -17,7 +18,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        signIn = findViewById(R.id.button_sign_in);
+        signIn = findViewById(R.id.button_register);
         signIn.setOnClickListener((View view)->{
                 startActivity(new Intent(LoginActivity.this,MainActivity.class));
         });
@@ -27,5 +28,10 @@ public class LoginActivity extends AppCompatActivity {
         if(username.requestFocus()) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+
+        TextView register = findViewById(R.id.textView_create_account);
+        register.setOnClickListener((View v)->{
+            startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
+        });
     }
 }

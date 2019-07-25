@@ -1,31 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/startButton"
+        android:id="@+id/start_stopButton"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginTop="20dp"
-        android:text="Start Exercise"
-        android:textColor="@color/colorText"
+        android:layout_height="70dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/start_exercise"
+        android:background="@drawable/button_selector"
+        style="?android:attr/borderlessButtonStyle"
+        android:textColor="@color/colorTextTitle"
         android:textSize="30sp" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/record_progressBar"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
         style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressDrawable="@drawable/custom_progressbar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:progress="0"
-        android:layout_below="@id/startButton"
+        android:layout_below="@id/start_stopButton"
         android:max="10"/>
 
     <TextView
         android:id="@+id/progressText"
-        android:layout_below="@+id/progressBar"
+        android:layout_below="@+id/record_progressBar"
         android:lines="2"
         android:maxLines="3"
         android:singleLine="false"
@@ -33,100 +42,107 @@
         android:textSize="20sp"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/feet" />
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/grade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:gravity="center"
+        android:layout_below="@id/progressText"
+        android:layout_above="@id/feet"/>
 
     <ImageView
         android:id="@+id/feet"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/foot"
-        android:layout_alignParentBottom="true"
-        />
+        app:srcCompat="@drawable/foot" />
 
     <TextView
         android:id="@+id/p0"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:background="@drawable/circle"
-        android:textSize="20dp"
-        android:text="0"
-        android:layout_marginTop="320dp"
-        android:layout_marginLeft="290dp"
+        android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        />
+        android:layout_marginStart="250dp"
+        android:layout_marginTop="280dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/p1"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:background="@drawable/circle"
-        android:textSize="20dp"
-        android:text="0"
-        android:layout_marginTop="110dp"
-        android:layout_marginLeft="270dp"
+        android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        />
+        android:layout_marginStart="230dp"
+        android:layout_marginTop="95dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/p2"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:background="@drawable/circle"
-        android:textSize="20dp"
-        android:text="0"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="250dp"
+        android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        />
+        android:layout_marginStart="210dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/p3"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:background="@drawable/circle"
-        android:textSize="20dp"
-        android:text="0"
-        android:layout_marginTop="60dp"
-        android:layout_marginLeft="330dp"
+        android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        />
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="55dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/p4"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:background="@drawable/circle"
-        android:textSize="20dp"
-        android:text="0"
-        android:layout_marginTop="145dp"
-        android:layout_marginLeft="335dp"
+        android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        />
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="125dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/p5"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:background="@drawable/circle"
-        android:textSize="20dp"
-        android:text="0"
-        android:layout_marginTop="220dp"
-        android:layout_marginLeft="325dp"
+        android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        />
+        android:layout_marginStart="275dp"
+        android:layout_marginTop="195dp"
+        android:background="@drawable/circle"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
 
 </RelativeLayout>

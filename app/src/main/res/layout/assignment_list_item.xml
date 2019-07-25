@@ -6,17 +6,53 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="15dp"
-    app:cardCornerRadius="12dp"
-    app:strokeColor="@color/colorSecondaryText"
-    app:strokeWidth="1dp">
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="5dp">
 
-
-    <TextView
-        android:id="@+id/assigment_list1"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:text="Assignment 1"
-        android:textColor="@color/colorText" />
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/assigment_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Assignment 1"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/colorText"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/assignment_step"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0 out of 47 steps done."/>
+    <ProgressBar
+        android:id="@+id/assignment_progress"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginBottom="8dp"
+        android:progressDrawable="@drawable/custom_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Due "/>
+            <TextView
+                android:id="@+id/assignment_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monday"/>
+        </LinearLayout>
+    </LinearLayout>
 </android.support.design.card.MaterialCardView>

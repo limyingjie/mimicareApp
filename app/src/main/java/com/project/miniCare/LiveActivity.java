@@ -1,6 +1,5 @@
-package com.project.miniCare.Fragments;
+package com.project.miniCare;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
@@ -9,22 +8,16 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.project.miniCare.MainActivity;
+import com.project.miniCare.Data.Assignment;
 import com.project.miniCare.Utils.BluetoothDataHandler;
 import com.project.miniCare.Utils.MockStepGenerator;
-import com.project.miniCare.R;
 import com.project.miniCare.Services.SerialListener;
 import com.project.miniCare.Services.SerialService;
 import com.project.miniCare.Services.SerialSocket;
@@ -33,13 +26,17 @@ import com.project.miniCare.Utils.StepChecker;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
-
+public class LiveActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
+    private static final String TAG = "LiveActivity";
     private enum Connected {False, Pending, True}
 
     private String deviceAddress;
 
     private TextView[] pressureTexts = new TextView[6];
+    private TextView grade;
+    private TextView tv;
+    private ProgressBar pb;
+    private Button button;
 
     private SerialSocket socket;
     private SerialService service;
@@ -47,10 +44,13 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private Connected connected = Connected.False;
 
     private boolean inExercise = false;
-    private int numSteps = 0;
+    private boolean isDone = false;
+    private int currentStep;
+    private int targetStep;
     private boolean inLowState = false;
 
-    StepChecker stepChecker = new StepChecker(new int[]{0, 200, 400, 600, 800, 1000});
+    // the correct step
+    StepChecker stepChecker = new StepChecker(new int[]{0, 250, 500, 1000, 2000, 4000});
 
     BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
@@ -58,7 +58,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     MockDataRunnable mockDataRunnable;
     boolean isMocking = true;
 
-    public LiveFragment() {
+    public LiveActivity() {
     }
 
     /*
@@ -67,16 +67,59 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        setRetainInstance(true);
-        deviceAddress = getArguments().getString("device");
+        setContentView(R.layout.fragment_live);
+        // default value
+        deviceAddress = null;
+        currentStep = 0;
+        targetStep = 20;
+
+        Intent intent = getIntent();
+        if (intent!=null) {
+            deviceAddress = intent.getStringExtra("device");
+            Assignment assignment = intent.getParcelableExtra("assignment");
+            if (assignment!=null){
+                currentStep = assignment.getCurrent();
+                targetStep = assignment.getTarget();
+            }
+            Log.d(TAG, "onCreate: " + deviceAddress);
+            Log.d(TAG, "onCreate: " + assignment);
+        }
+
+        // bind service
+        bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
+
+        /*
+         * UI
+         */
+        pressureTexts[0] = findViewById(R.id.p0);
+        pressureTexts[1] = findViewById(R.id.p1);
+        pressureTexts[2] = findViewById(R.id.p2);
+        pressureTexts[3] = findViewById(R.id.p3);
+        pressureTexts[4] = findViewById(R.id.p4);
+        pressureTexts[5] = findViewById(R.id.p5);
+
+        // set the initial progress text and bar
+        pb = findViewById(R.id.record_progressBar);
+        tv = findViewById(R.id.progressText);
+        grade = findViewById(R.id.grade);
+        pb.setMax(targetStep);
+        pb.setProgress(currentStep);
+        tv.setText(String.format("%d steps", currentStep));
+        button = findViewById(R.id.start_stopButton);
+        button.setOnClickListener(v -> exercise());
     }
 
     @Override
     public void onDestroy() {
+        // disconnect
         if (connected != Connected.False)
             disconnect();
-        getActivity().stopService(new Intent(getActivity(), SerialService.class));
+        // unbind service
+        try {
+            unbindService(this);
+        } catch (Exception ignored) {}
+        stopService(new Intent(this, SerialService.class));
+
         super.onDestroy();
     }
 
@@ -86,57 +129,34 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         if (service != null)
             service.attach(this);
         else
-            getActivity().startService(new Intent(getActivity(), SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
+            startService(new Intent(this, SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
     }
 
     @Override
     public void onStop() {
-        if (service != null && !getActivity().isChangingConfigurations())
+        if (service != null && !this.isChangingConfigurations())
             service.detach();
-        if (isMocking) mockDataRunnable.isActive = false;
-
-        // show the action bar and bottomNav again
-        ((MainActivity)getActivity()).getSupportActionBar().show();
-        ((MainActivity)getActivity()).bottomNav.setVisibility(View.VISIBLE);
+        // stop the thread if it has started (they are exercising)
+        if (inExercise) mockDataRunnable.isActive = false;
         super.onStop();
     }
 
-    @SuppressWarnings("deprecation")
-    // onAttach(context) was added with API 23. onAttach(activity) works for all API versions
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        getActivity().bindService(new Intent(getActivity(), SerialService.class), this, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onDetach() {
-        try {
-            getActivity().unbindService(this);
-        } catch (Exception ignored) {
-        }
-        super.onDetach();
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         if (initialStart && service != null) {
             initialStart = false;
-            getActivity().runOnUiThread(this::connect);
+            runOnUiThread(this::connect);
         }
-        // hide actionBar and bottomNav
-        ((MainActivity)getActivity()).getSupportActionBar().hide();
-        ((MainActivity)getActivity()).bottomNav.setVisibility(View.GONE);
-
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         service = ((SerialService.SerialBinder) binder).getService();
-        if (initialStart && isResumed()) {
+        if (initialStart) {
             initialStart = false;
-            getActivity().runOnUiThread(this::connect);
+            runOnUiThread(this::connect);
         }
     }
 
@@ -145,72 +165,94 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         service = null;
     }
 
-    /*
-     * UI
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_live, container, false);
-        pressureTexts[0] = view.findViewById(R.id.p0);
-        pressureTexts[1] = view.findViewById(R.id.p1);
-        pressureTexts[2] = view.findViewById(R.id.p2);
-        pressureTexts[3] = view.findViewById(R.id.p3);
-        pressureTexts[4] = view.findViewById(R.id.p4);
-        pressureTexts[5] = view.findViewById(R.id.p5);
 
+    private void startExercise() {
         if (isMocking) {
             mockDataRunnable = new MockDataRunnable();
+            // create new thread
             mockDataThread = new Thread(mockDataRunnable);
+            Log.d("MOCK", "Thread Id: " + mockDataThread.currentThread().getId());
             mockDataThread.start();
         }
 
-        Button button = view.findViewById(R.id.startButton);
-        button.setOnClickListener(v -> startExercise());
-        return view;
-    }
-
-    private void startExercise() {
+        button.setText(R.string.stop_exercise);
         inExercise = true;
-        numSteps = 0;
-        inLowState = false;
-        updateProgress();
     }
 
-    private void updateProgress() {
-        TextView tv = getView().findViewById(R.id.progressText);
-        getActivity().runOnUiThread(() -> tv.setText(String.format("%d steps", numSteps)));
-        ProgressBar pb = getView().findViewById(R.id.progressBar);
-        pb.setProgress(numSteps);
-        if (numSteps >= pb.getMax()) {
-            getActivity().runOnUiThread(() -> tv.setText("Congratulations! You've completed an exercise!"));
+    private void stopExercise(){
+        if (isMocking) mockDataRunnable.isActive = false;
+        button.setText(R.string.start_exercise);
+        inExercise = false;
+    }
 
+    private void exercise(){
+        if (isDone)return;
+        if (inExercise){
+            // we are exercising and we want to stop exercising
+            stopExercise();
+        }
+        else{
+            // we are not exercising and want to start exercising
+            startExercise();
+        }
+
+    }
+    private void updateProgress(String result) {
+        // this is not in UI thread so need to use the runOnUIThread method
+        runOnUiThread(() -> {
+            tv.setText(String.format("%d steps", currentStep));
+            pb.setProgress(currentStep);
+            grade.setText(result);
+            switch (result){
+                case "PERFECT":
+                    grade.setTextColor(getResources().getColor(R.color.colorTriadicVariant));
+                    break;
+                case "GOOD":
+                    grade.setTextColor(getResources().getColor(R.color.colorAnalogous));
+                    break;
+                case "POOR":
+                    grade.setTextColor(getResources().getColor(R.color.colorAnalogousVariant));
+            }
+        });
+        if (currentStep >= pb.getMax()) {
+            runOnUiThread(() -> {
+                tv.setText("Congratulations! You've completed an exercise!");
+                // empty the grade
+                grade.setText("");
+            });
+            // stop the thread
+            stopExercise();
+            isDone = true;
         }
     }
 
     private void process_data(int[] pressureData) {
-        Log.i("LiveFragment", Arrays.toString(pressureData));
+        Log.i("LiveActivity", Arrays.toString(pressureData));
 
         if (pressureData == null) {
             return;
         }
 
-        boolean nowInLowState = pressureData[4] > 200;
+        // on the ground
+        boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            Log.i("LiveFragment", result);
+            currentStep += 1;
+            Log.d(TAG, "process_data: " + currentStep);
+            updateProgress(result);
         }
-
-        if (inExercise) {
-            if (inLowState && !nowInLowState) {
-                numSteps += 1;
-                updateProgress();
-            }
-            inLowState = nowInLowState;
-        }
-
         updatePressureText(pressureData);
     }
 
+    private boolean isAllZero(int[] pressure){
+        for (int i = 0; i < pressure.length; i++){
+            // once it is non-zero, not all is zero
+            if (pressure[i]>0){
+                return false;
+            }
+        }
+        return true;
+    }
     /*
      * Serial + UI
      */
@@ -224,7 +266,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             connected = Connected.Pending;
             socket = new SerialSocket();
             service.connect(this, "Connected to " + deviceName);
-            socket.connect(getContext(), service, device);
+            socket.connect(this, service, device);
         } catch (Exception e) {
             onSerialConnectError(e);
         }

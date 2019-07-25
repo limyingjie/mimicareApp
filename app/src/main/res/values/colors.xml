@@ -3,16 +3,22 @@
     <color name="colorPrimary">#d84315</color>
     <color name="colorPrimaryDark">#bf360c</color>
     <color name="colorAccent">#ff6e40</color>
-    <color name="colorPrimaryDarker">#991F00</color>
+    <color name="colorComplementary">#15abd8</color>
+    <color name="colorAnalogous">#d8a415</color>
+    <color name="colorAnalogousVariant">#d81549</color>
+    <color name="colorTriadic">#abd815</color>
+    <color name="colorTriadicVariant">#15d843</color>
 
     <color name="colorRecieveText">#00FF00</color>
     <color name="colorSendText">#82CAFF</color>
     <color name="colorStatusText">#3D5AFE</color>
     <color name="colorMainBackground">#FFFFFF</color>
     <color name="colorText">#000000</color>
+    <color name="colorBlack">#000000</color>
     <color name="colorSecondaryText">#696969</color>
     <color name="colorTextTitle">#FFFFFF</color>
     <color name="colorBackgroundProfile">#FFFFFF</color>
     <color name="colorFadeTextTitle">#DDFFFFFF</color>
     <color name="colorSecondaryTitle">#C5C5C5</color>
+    <color name="colorLightGrey">#DFDFDF</color>
 </resources>

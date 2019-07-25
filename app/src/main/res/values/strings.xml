@@ -13,12 +13,18 @@
     <string name="location_denied_message">As location permission has not been granted, this app cannot scan for Bluetooth LE devices.</string>
     <string name="pairing_request">PAIRING requested\n-> Perform pairing steps. Connect again</string>
     <string name="data">Data</string>
-    <string name="record">Record</string>
+    <string name="record">Please walk 20 steps</string>
     <string name="test">Test</string>
     <string name="default_name">Your Name</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="setting">Setting</string>
     <string name="create">Create account</string>
     <string name="login">Sign In</string>
+    <string name="register">Register</string>
+    <string name="step">%d out of %d steps done</string>
+    <string name="start_exercise">Start Exercise</string>
+    <string name="stop_exercise">Stop Exercise</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
 
 </resources>

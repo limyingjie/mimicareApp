@@ -1,5 +1,6 @@
 package com.project.miniCare.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -9,9 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.project.miniCare.LiveActivity;
+import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
+import com.project.miniCare.RecordActivity;
 
 import java.util.Random;
 
@@ -29,6 +34,8 @@ public class MainMenuFragment extends Fragment {
     private Random rng = new Random();
     private TextView speechBubbleLeft;
     private TextView speechBubbleRight;
+    private Button record_button;
+    private Button golive_button;
 
     class ShowSpeech implements Runnable {
         private TextView speechBubble;
@@ -106,6 +113,14 @@ public class MainMenuFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mainmenu, container, false);
         speechBubbleLeft = view.findViewById(R.id.speechleft);
         speechBubbleRight = view.findViewById(R.id.speechright);
+        record_button = view.findViewById(R.id.record_button);
+        golive_button = view.findViewById(R.id.golive);
+        record_button.setOnClickListener((View v)-> startActivity(new Intent(getActivity(), RecordActivity.class)));
+        golive_button.setOnClickListener((View v)-> {
+            Intent intent = new Intent(getActivity(), LiveActivity.class);
+            intent.putExtra("device",((MainActivity)getActivity()).device);
+            startActivity(intent);
+        });
         handler = new Handler();
         handler.postDelayed(Speak, (long) rng.nextFloat()*(maxInterval-minInterval)+5000);
         return view;

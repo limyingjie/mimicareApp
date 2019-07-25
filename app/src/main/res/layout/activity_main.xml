@@ -48,14 +48,14 @@
 
         </FrameLayout>
 
-        <android.support.design.widget.BottomNavigationView
+        <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:elevation="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:background="@drawable/grey_top_border"
+            android:elevation="0dp"
             style="@style/ButtonNavigation"
             app:menu="@menu/menu_bottom_nav" />
 

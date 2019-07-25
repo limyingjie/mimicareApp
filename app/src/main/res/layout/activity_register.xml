@@ -10,11 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Login"
+        android:text="@string/register"
         android:textColor="@color/colorText"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/editText_username"
+        app:layout_constraintBottom_toTopOf="@+id/editText_full_name"
         app:layout_constraintEnd_toEndOf="@+id/editText_username"
         app:layout_constraintStart_toStartOf="@+id/editText_username"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,6 +34,25 @@
         android:padding="10dp"
         app:layout_constraintBottom_toTopOf="@+id/editText_password"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_full_name"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <EditText
+        android:id="@+id/editText_full_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/login_selector"
+        android:ems="10"
+        android:hint="Full Name"
+        android:inputType="textPersonName"
+        android:padding="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/editText_username"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_login"
         app:layout_constraintVertical_chainStyle="packed" />
@@ -48,41 +67,25 @@
         android:hint="Password"
         android:inputType="textPassword"
         android:padding="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView_create_account"
+        app:layout_constraintBottom_toTopOf="@+id/button_register"
         app:layout_constraintEnd_toEndOf="@+id/editText_username"
         app:layout_constraintStart_toStartOf="@+id/editText_username"
         app:layout_constraintTop_toBottomOf="@+id/editText_username"
         app:layout_constraintVertical_chainStyle="packed" />
-
-    <TextView
-        android:id="@+id/textView_create_account"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/create"
-        android:textColor="@color/colorStatusText"
-        app:layout_constraintBottom_toTopOf="@+id/button_register"
-        app:layout_constraintStart_toStartOf="@+id/editText_password"
-        app:layout_constraintTop_toBottomOf="@+id/editText_password" />
 
     <Button
         android:id="@+id/button_register"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/button_selector"
-        android:text="@string/login"
+        android:text="@string/register"
         android:textColor="@color/colorTextTitle"
         android:textSize="16sp"
         style="?android:attr/borderlessButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/editText_password"
         app:layout_constraintStart_toStartOf="@+id/editText_password"
-        app:layout_constraintTop_toBottomOf="@+id/textView_create_account" />
-
-
-
-
+        app:layout_constraintTop_toBottomOf="@+id/editText_password" />
 
 
 </android.support.constraint.ConstraintLayout>

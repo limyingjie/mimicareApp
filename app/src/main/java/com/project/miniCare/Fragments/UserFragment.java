@@ -29,7 +29,6 @@ public class UserFragment extends Fragment{
     RecyclerView recyclerView;
     List<String> settings;
     ImageView profilePhoto;
-    UniversalImageLoader universalImageLoader;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,13 +77,13 @@ public class UserFragment extends Fragment{
     }
 
     private void initImageLoader(){
-        universalImageLoader = new UniversalImageLoader(getActivity());
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(getActivity());
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
     private void setProfileImage(){
         Log.d(TAG, "setProfileImage: Called");
         String imageUrl = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/01/31/14/panda-bamboo.jpg";
-        universalImageLoader.setImage(imageUrl,profilePhoto,null,"");
+        UniversalImageLoader.setImage(imageUrl,profilePhoto,null,"");
 
     }
     // recycleView adapter

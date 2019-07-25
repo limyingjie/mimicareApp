@@ -22,6 +22,8 @@ public class StepChecker {
         Log.d("StepChecker", "Difference: " + difference);
 
         String result;
+
+        // check the total difference
         if (difference <= 2000) {
             result = "PERFECT";
         } else if (difference <= 2500) {

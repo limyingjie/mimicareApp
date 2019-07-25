@@ -28,6 +28,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".LiveActivity" />
+        <activity android:name=".RecordActivity" />
+
         <service android:name="com.project.miniCare.Services.SerialService" />
     </application>
 

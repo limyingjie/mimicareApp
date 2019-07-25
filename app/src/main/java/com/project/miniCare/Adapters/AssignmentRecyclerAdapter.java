@@ -5,31 +5,29 @@ import android.support.annotation.NonNull;
 import android.support.design.card.MaterialCardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.project.miniCare.Data.Assignment;
 import com.project.miniCare.R;
 
 import java.util.ArrayList;
 // https://proandroiddev.com/recyclerview-pro-tips-part-1-8a291594bafc tips
 public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRecyclerAdapter.ViewHolder>{
     private static final String TAG = "AssignmentRecyclerAdapt";
-    private ArrayList<String> mAssignment;
+    private ArrayList<Assignment> mAssignment;
     private OnClickListener onClickListener;
-    private SparseBooleanArray mSparseBooleanArray;
     private Context context;
 
-    public AssignmentRecyclerAdapter(ArrayList<String> mAssignment, OnClickListener onClickListener,Context context) {
+    public AssignmentRecyclerAdapter(ArrayList<Assignment> mAssignment, OnClickListener onClickListener,Context context) {
         Log.d(TAG, "AssignmentRecyclerAdapter: Called");
         this.mAssignment = mAssignment;
         this.onClickListener = onClickListener;
         this.context = context;
-        mSparseBooleanArray = new SparseBooleanArray();
     }
-
 
     @NonNull
     @Override
@@ -44,24 +42,14 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Log.d(TAG, "onBindViewHolder: called.");
-
-        viewHolder.assignment.setText(mAssignment.get(i));
-        if (mSparseBooleanArray.get(i,false)){
-            viewHolder.cardView.setStrokeColor(context.getResources().getColor(R.color.colorPrimary));
-        }
-        else{
-            viewHolder.cardView.setStrokeColor(context.getResources().getColor(R.color.colorText));
-        }
-    }
-
-    public SparseBooleanArray getSelectedPosition(){
-        return mSparseBooleanArray;
-    }
-
-    public void setSelectedPosition(SparseBooleanArray sparseBooleanArray){
-        // rearrange the array
-
-        mSparseBooleanArray = sparseBooleanArray;
+        Assignment assignment_data = mAssignment.get(i);
+        viewHolder.assignment_title.setText(assignment_data.getName());
+        viewHolder.assignment_progress.setMax(assignment_data.getTarget());
+        viewHolder.assignment_progress.setProgress(assignment_data.getCurrent());
+        viewHolder.assignment_date.setText(assignment_data.getDate());
+        String step = context.getString(R.string.step);
+        step = String.format(step,assignment_data.getCurrent(),assignment_data.getTarget());
+        viewHolder.assignment_step.setText(step);
     }
     @Override
     public int getItemCount() {
@@ -71,12 +59,18 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         MaterialCardView cardView;
         OnClickListener onClickListener;
-        TextView assignment;
+        TextView assignment_title;
+        TextView assignment_date;
+        TextView assignment_step;
+        ProgressBar assignment_progress;
         Context context;
         public ViewHolder(@NonNull View itemView, OnClickListener onClickListener, Context context) {
             super(itemView);
             Log.d(TAG, "ViewHolder: Called");
-            assignment = itemView.findViewById(R.id.assigment_list1);
+            assignment_title = itemView.findViewById(R.id.assigment_title);
+            assignment_date = itemView.findViewById(R.id.assignment_date);
+            assignment_progress = itemView.findViewById(R.id.assignment_progress);
+            assignment_step = itemView.findViewById(R.id.assignment_step);
             cardView = itemView.findViewById(R.id.assignment_parent);
             this.context = context;
             this.onClickListener = onClickListener;
@@ -86,15 +80,7 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
 
         @Override
         public void onClick(View view) {
-            if (mSparseBooleanArray.get(getAdapterPosition(),false)){
-                mSparseBooleanArray.delete(getAdapterPosition());
-                cardView.setStrokeColor(context.getResources().getColor(R.color.colorText));
-            }
-            else{
-                mSparseBooleanArray.put(getAdapterPosition(),true);
-                cardView.setStrokeColor(context.getResources().getColor(R.color.colorPrimary));
-            }
-            Log.d(TAG, "onClick: "+mSparseBooleanArray);
+            Log.d(TAG, "onClick: "+ getAdapterPosition());
             onClickListener.onClickListener(getAdapterPosition());
         }
     }

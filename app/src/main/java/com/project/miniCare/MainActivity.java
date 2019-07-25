@@ -2,8 +2,6 @@ package com.project.miniCare;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,12 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.project.miniCare.Fragments.AssignmentFragment;
 import com.project.miniCare.Fragments.DevicesFragment;
-import com.project.miniCare.Fragments.LiveFragment;
 import com.project.miniCare.Fragments.UserFragment;
 import com.project.miniCare.Fragments.WalkFragment;
 
@@ -24,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     public String device;
     public Toolbar toolbar;
-    public BottomNavigationView bottomNav;
+    public BottomNavigationViewEx bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +34,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         bottomNav =findViewById(R.id.bottom_navigation);
+        initBottomNavigationViewEx();
         bottomNav.setOnNavigationItemSelectedListener(navListener);
-
-
-        //possibly use https://github.com/ittianyu/BottomNavigationViewEx instead
-        //remove padding in bottom navigation
-        removePaddingFromNavigation();
-
 
         // code from Simple BLE
         getSupportFragmentManager().addOnBackStackChangedListener(this);
@@ -64,13 +56,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         return true;
     }
 
-    public void goLive(View view){
-        Bundle args = new Bundle();
-        args.putString("device", device);
-        Fragment fragment = new LiveFragment();
-        fragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "live").addToBackStack(null).commit();
-    }
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
                 @Override
@@ -113,14 +98,10 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     }
 
-    private void removePaddingFromNavigation(){
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNav.getChildAt(0);
-        for (int i = 0; i < menuView.getChildCount(); i++) {
-            BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
-            View activeLabel = item.findViewById(R.id.largeLabel);
-            if (activeLabel instanceof TextView) {
-                activeLabel.setPadding(0, 0, 0, 0);
-            }
-        }
+    private void initBottomNavigationViewEx(){
+        bottomNav.enableAnimation(false);
+        bottomNav.enableItemShiftingMode(false);
+        bottomNav.enableShiftingMode(false);
+        bottomNav.setTextVisibility(true);
     }
 }
