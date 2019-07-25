@@ -13,8 +13,4 @@
 <style name="TextAppearanceTitle" parent="TextAppearance.AppCompat.Title">
     <item name="android:textColor">@color/colorTextTitle</item>
 </style>
-
-    <style name="TextProfileSetting">
-        <item name="android:textSize">16sp</item>
-    </style>
 </resources>

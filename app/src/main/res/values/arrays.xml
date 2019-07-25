@@ -20,10 +20,14 @@
         <item>assignment 9</item>
         <item>assignment 10</item>
     </string-array>
-    <string-array name="settings">
-        <item>Profile</item>
-        <item>Layout</item>
-        <item>Help</item>
-        <item>FAQ</item>
+    <string-array name="settingTitle">
+        <item>Email</item>
+        <item>Phone</item>
+        <item>Date of Birth</item>
+    </string-array>
+    <string-array name="settingValue">
+        <item>Panda@gmail.com</item>
+        <item>875666777</item>
+        <item>1 Jan 1990</item>
     </string-array>
 </resources>

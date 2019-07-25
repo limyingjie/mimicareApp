@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
+    android:id="@+id/setting_parent"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="?android:attr/selectableItemBackground"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:background="?android:attr/selectableItemBackground"
-        android:id="@+id/setting_textView"
+        android:id="@+id/setting_title_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/setting_margin_horizontal"
-        android:layout_marginEnd="@dimen/setting_margin_horizontal"
-        android:paddingTop="@dimen/setting_padding_vertical"
-        android:paddingBottom="@dimen/setting_padding_vertical"
-        android:paddingStart="@dimen/setting_padding_horizontal"
-        android:paddingEnd="@dimen/setting_padding_horizontal"
-        style="@style/TextProfileSetting"
-        android:text="@string/setting" />
+        android:background="@drawable/grey_bottom_border"
+        android:paddingTop="15dp"
+        android:paddingBottom="40dp"
+        android:text="@string/setting"
+        android:textSize="14sp"
+        android:gravity="top"
+        android:textColor="@color/colorPrimaryDark"/>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/setting_value_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/setting_title_textView"
+        android:layout_marginBottom="8dp"
+        android:text="panda@gmail.com"
+        android:textSize="16sp" />
+
+</RelativeLayout>

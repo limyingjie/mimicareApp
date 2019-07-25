@@ -135,7 +135,7 @@ public class SerialSocket extends BluetoothGattCallback {
     }
 
     private void onPairingBroadcastReceive(Context context, Intent intent) {
-        // for ARM Mbed, Microbit, ... use pairing from Android bluetooth settings
+        // for ARM Mbed, Microbit, ... use pairing from Android bluetooth settingTitle
         // for HM10-clone, ... pairing is initiated here
         BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
         if(device==null || !device.equals(this.device))

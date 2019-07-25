@@ -1,10 +1,10 @@
 package com.project.miniCare.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,23 +12,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 import com.project.miniCare.Utils.SimpleToast;
 import com.project.miniCare.Utils.UniversalImageLoader;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class UserFragment extends Fragment{
     private static final String TAG = "UserFragment";
-    RecyclerView recyclerView;
-    List<String> settings;
-    ImageView profilePhoto;
+    private BarChart progress_bar;
+    private RecyclerView recyclerView;
+    private List<SettingClass> settings;
+    private List<StepData> progress_data;
+    private ImageView profilePhoto;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +50,15 @@ public class UserFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user,container,false);
+
+        // init UI
         profilePhoto = view.findViewById(R.id.profile_pic);
+        progress_bar = view.findViewById(R.id.setting_barChart_progress);
+
         initImageLoader();
+        initProgressBar();
+        initSetting();
         setProfileImage();
-        settings = Arrays.asList(getResources().getStringArray(R.array.settings));
 
         recyclerView = view.findViewById(R.id.recycle_settings);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity()){
@@ -52,9 +68,18 @@ public class UserFragment extends Fragment{
             }
         };
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),linearLayoutManager.getOrientation()));
+        //recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),linearLayoutManager.getOrientation()));
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new settingsRecycleViewAdapter(settings));
+
+        // UI of progress
+        TextView average_step = view.findViewById(R.id.progressBar_stepAverage_textView);
+        TextView personal_best = view.findViewById(R.id.progressBar_personalBest_textView);
+        TextView total_step = view.findViewById(R.id.progressBar_totalStep_textView);
+        ListStepData listStepData = new ListStepData(progress_data);
+        average_step.setText(Integer.toString(listStepData.getAverageStep()));
+        personal_best.setText(Integer.toString(listStepData.getPersonalBest()));
+        total_step.setText(Integer.toString(listStepData.getTotalStep()));
         return view;
     }
 
@@ -76,9 +101,59 @@ public class UserFragment extends Fragment{
         ((MainActivity)getActivity()).getSupportActionBar().show();
     }
 
+    private void initSetting(){
+        settings = new ArrayList<>();
+        List<String> title = Arrays.asList(getResources().getStringArray(R.array.settingTitle));
+        List<String> value = Arrays.asList(getResources().getStringArray(R.array.settingValue));
+
+        for (int i = 0; i < title.size();i++){
+            settings.add(new SettingClass(title.get(i),value.get(i)));
+        }
+    }
+
     private void initImageLoader(){
         UniversalImageLoader universalImageLoader = new UniversalImageLoader(getActivity());
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
+    private void initStepData(){
+        progress_data = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = 1; i < 8; i++){
+            progress_data.add(new StepData(i,random.nextInt(50)));
+        }
+    }
+    private void initProgressBar(){
+        progress_bar.setDrawBarShadow(false);
+        progress_bar.setDrawValueAboveBar(true);
+        progress_bar.setMaxVisibleValueCount(30);
+        progress_bar.setPinchZoom(false);
+        progress_bar.setDrawGridBackground(false);
+        progress_bar.getDescription().setEnabled(false);
+        progress_bar.getLegend().setEnabled(false);
+
+        // remove top and right axis, remove the grid
+        YAxis yr = progress_bar.getAxisRight();
+        yr.setEnabled(false);
+        yr.setDrawAxisLine(false);
+        YAxis yl = progress_bar.getAxisLeft();
+        yl.setDrawGridLines(false);
+        XAxis xAxis = progress_bar.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+
+        initStepData();
+
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        for (int i = 0; i < progress_data.size(); i++){
+            barEntries.add(new BarEntry(progress_data.get(i).day,progress_data.get(i).step));
+        }
+        BarDataSet barDataSet = new BarDataSet(barEntries,"Step");
+        barDataSet.setDrawValues(true);
+
+        BarData barData = new BarData(barDataSet);
+        progress_bar.setData(barData);
     }
     private void setProfileImage(){
         Log.d(TAG, "setProfileImage: Called");
@@ -86,12 +161,88 @@ public class UserFragment extends Fragment{
         UniversalImageLoader.setImage(imageUrl,profilePhoto,null,"");
 
     }
-    // recycleView adapter
-    class settingsRecycleViewAdapter extends RecyclerView.Adapter<settingsRecycleViewAdapter.ViewHolder>{
-        List<String> msettings;
 
-        public settingsRecycleViewAdapter(List<String> settings){
-            this.msettings = settings;
+    // Data
+    // Too lazy to use getter and setter
+    class SettingClass {
+        public String title;
+        public String value;
+
+        public SettingClass(String title, String value) {
+            this.title = title;
+            this.value = value;
+        }
+    }
+
+    class StepData {
+        public int day;
+        public int step;
+
+        public StepData(int day, int step) {
+            this.day = day;
+            this.step = step;
+        }
+    }
+
+    class ListStepData{
+        private List<StepData> listStepData;
+        private ArrayList<Integer> step;
+        private int total;
+        private int highest;
+        public ListStepData(List<StepData> listStepData){
+            this.listStepData = listStepData;
+            step = new ArrayList<>();
+            total = 0;
+            highest = 0;
+        }
+
+        private void setUpStep(){
+            if (step==null){
+                for (StepData stepData: listStepData){
+                    step.add(stepData.step);
+                    total+=stepData.step;
+                    if (stepData.step>highest){
+                        highest = stepData.step;
+                    }
+                }
+            }
+            if (step.size()!= listStepData.size()){
+                step.clear();
+                total = 0;
+                highest = 0;
+                for (StepData stepData: listStepData){
+                    step.add(stepData.step);
+                    total+=stepData.step;
+                    if (stepData.step>highest){
+                        highest = stepData.step;
+                    }
+                }
+            }
+            return;
+        }
+        public int getAverageStep(){
+            setUpStep();
+            return total/step.size();
+        }
+
+        public int getPersonalBest(){
+            setUpStep();
+            return highest;
+        }
+
+        public int getTotalStep(){
+            setUpStep();
+            return total;
+        }
+    }
+
+
+    // general recycleView adapter
+    class settingsRecycleViewAdapter extends RecyclerView.Adapter<settingsRecycleViewAdapter.ViewHolder>{
+        List<SettingClass> mSettings;
+
+        public settingsRecycleViewAdapter(List<SettingClass> settings){
+            this.mSettings = settings;
         }
 
         @NonNull
@@ -103,26 +254,31 @@ public class UserFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(@NonNull settingsRecycleViewAdapter.ViewHolder viewHolder, int i) {
-            viewHolder.settingTextView.setText(msettings.get(i));
+            viewHolder.settingTitleTextView.setText(mSettings.get(i).title);
+            viewHolder.settingValueTextView.setText(mSettings.get(i).value);
         }
 
         @Override
         public int getItemCount() {
-            return msettings.size();
+            return mSettings.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            TextView settingTextView;
+            RelativeLayout parent;
+            TextView settingTitleTextView;
+            TextView settingValueTextView;
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
-                settingTextView = itemView.findViewById(R.id.setting_textView);
-                settingTextView.setOnClickListener(this);
+                settingTitleTextView = itemView.findViewById(R.id.setting_title_textView);
+                settingValueTextView = itemView.findViewById(R.id.setting_value_textView);
+                parent = itemView.findViewById(R.id.setting_parent);
+                parent.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Called");
-                SimpleToast.show(getActivity(),"Clicked :" + msettings.get(getAdapterPosition()),Toast.LENGTH_SHORT);
+                SimpleToast.show(getActivity(),"Clicked :" + mSettings.get(getAdapterPosition()).value,Toast.LENGTH_SHORT);
             }
         }
     }
