@@ -168,7 +168,7 @@ public class UserFragment extends Fragment{
         setting_barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                barChart_current_textView.setText(String.format("Steps: %d",Math.round(e.getY())));
+                barChart_current_textView.setText(String.format("Day %d steps %d",Math.round(e.getX()),Math.round(e.getY())));
             }
 
             @Override
