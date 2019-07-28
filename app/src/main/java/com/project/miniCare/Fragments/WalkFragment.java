@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,9 @@ import android.view.ViewGroup;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 import com.project.miniCare.Adapters.TabFragmentAdapter;
+import com.project.miniCare.Utils.changeHandler;
 
-public class WalkFragment extends Fragment {
+public class WalkFragment extends Fragment{
     private static final String TAG = "WalkFragment";
 
     private TabFragmentAdapter mtabFragmentAdapter;
@@ -45,6 +47,29 @@ public class WalkFragment extends Fragment {
         mtabFragmentAdapter = new TabFragmentAdapter(getChildFragmentManager());
         viewPager = getView().findViewById(R.id.tabContainer);
         viewPager.setOffscreenPageLimit(2);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                Log.d(TAG, "onPageSelected: " + i);
+                // 0 is Test, 1 is Terminal
+                if (i == 0){
+                    // start the thread
+                }
+                else if(i==1){
+                    // stop the thread
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
         setupViewPager(viewPager);
 
         tabLayout = getView().findViewById(R.id.tabLayout);

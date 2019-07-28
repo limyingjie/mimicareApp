@@ -205,13 +205,13 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             grade.setText(result);
             switch (result){
                 case "PERFECT":
-                    grade.setTextColor(getResources().getColor(R.color.colorTriadicVariant));
+                    grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
                     break;
                 case "GOOD":
-                    grade.setTextColor(getResources().getColor(R.color.colorAnalogous));
+                    grade.setTextColor(getResources().getColor(R.color.colorSecondary));
                     break;
                 case "POOR":
-                    grade.setTextColor(getResources().getColor(R.color.colorAnalogousVariant));
+                    grade.setTextColor(getResources().getColor(R.color.colorSecondaryVariant));
             }
         });
         if (currentStep >= pb.getMax()) {

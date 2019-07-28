@@ -17,10 +17,11 @@ import com.project.miniCare.LiveActivity;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 import com.project.miniCare.RecordActivity;
+import com.project.miniCare.Utils.changeHandler;
 
 import java.util.Random;
 
-public class MainMenuFragment extends Fragment {
+public class MainMenuFragment extends Fragment implements changeHandler {
     private static final String TAG = "MainMenuFragment";
     private String[][] messages = {
             {"The weather\nlooks good~", "Let's go for\na walk shall we?"},
@@ -30,12 +31,23 @@ public class MainMenuFragment extends Fragment {
 
     private int minInterval = 10000;
     private int maxInterval = 15000;
-    private Handler handler;
+    public Handler handler;
     private Random rng = new Random();
     private TextView speechBubbleLeft;
     private TextView speechBubbleRight;
     private Button record_button;
     private Button golive_button;
+
+    @Override
+    public void onStartHandler() {
+        handler = new Handler();
+        handler.postDelayed(Speak, (long) rng.nextFloat()*(maxInterval-minInterval)+5000);
+    }
+
+    @Override
+    public void onStopHandler() {
+        handler.removeCallbacksAndMessages(null);
+    }
 
     class ShowSpeech implements Runnable {
         private TextView speechBubble;
@@ -75,6 +87,7 @@ public class MainMenuFragment extends Fragment {
     };
 
     public MainMenuFragment() {
+
     }
 
     /*
@@ -102,7 +115,7 @@ public class MainMenuFragment extends Fragment {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Called");
-        handler.removeCallbacksAndMessages(null);
+        onStopHandler();
         super.onDestroy();
     }
     /*
@@ -121,8 +134,8 @@ public class MainMenuFragment extends Fragment {
             intent.putExtra("device",((MainActivity)getActivity()).device);
             startActivity(intent);
         });
-        handler = new Handler();
-        handler.postDelayed(Speak, (long) rng.nextFloat()*(maxInterval-minInterval)+5000);
+        onStartHandler();
         return view;
     }
+
 }

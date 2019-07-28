@@ -1,6 +1,5 @@
 package com.project.miniCare.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +21,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
@@ -35,11 +37,12 @@ import java.util.Random;
 
 public class UserFragment extends Fragment{
     private static final String TAG = "UserFragment";
-    private BarChart progress_bar;
+    private BarChart setting_barChart;
     private RecyclerView recyclerView;
     private List<SettingClass> settings;
     private List<StepData> progress_data;
     private ImageView profilePhoto;
+    private TextView barChart_current_textView;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,8 @@ public class UserFragment extends Fragment{
 
         // init UI
         profilePhoto = view.findViewById(R.id.profile_pic);
-        progress_bar = view.findViewById(R.id.setting_barChart_progress);
+        setting_barChart = view.findViewById(R.id.setting_barChart_progress);
+        barChart_current_textView = view.findViewById(R.id.setting_barChart_current);
 
         initImageLoader();
         initProgressBar();
@@ -120,29 +124,11 @@ public class UserFragment extends Fragment{
         progress_data = new ArrayList<>();
         Random random = new Random();
 
-        for (int i = 1; i < 8; i++){
+        for (int i = 1; i < 20; i++){
             progress_data.add(new StepData(i,random.nextInt(50)));
         }
     }
     private void initProgressBar(){
-        progress_bar.setDrawBarShadow(false);
-        progress_bar.setDrawValueAboveBar(true);
-        progress_bar.setMaxVisibleValueCount(30);
-        progress_bar.setPinchZoom(false);
-        progress_bar.setDrawGridBackground(false);
-        progress_bar.getDescription().setEnabled(false);
-        progress_bar.getLegend().setEnabled(false);
-
-        // remove top and right axis, remove the grid
-        YAxis yr = progress_bar.getAxisRight();
-        yr.setEnabled(false);
-        yr.setDrawAxisLine(false);
-        YAxis yl = progress_bar.getAxisLeft();
-        yl.setDrawGridLines(false);
-        XAxis xAxis = progress_bar.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-
         initStepData();
 
         ArrayList<BarEntry> barEntries = new ArrayList<>();
@@ -150,10 +136,47 @@ public class UserFragment extends Fragment{
             barEntries.add(new BarEntry(progress_data.get(i).day,progress_data.get(i).step));
         }
         BarDataSet barDataSet = new BarDataSet(barEntries,"Step");
-        barDataSet.setDrawValues(true);
 
         BarData barData = new BarData(barDataSet);
-        progress_bar.setData(barData);
+        barData.setDrawValues(false);
+
+        setting_barChart.setData(barData);
+
+        // Adjust the UI of barChart
+        setting_barChart.setDrawBarShadow(false);
+        setting_barChart.setDrawValueAboveBar(true);
+        setting_barChart.setDrawGridBackground(false);
+        setting_barChart.getDescription().setEnabled(false);
+        setting_barChart.getLegend().setEnabled(false);
+        // remove top and right axis and remove the grid
+        // y axis should always start from zero
+        YAxis yr = setting_barChart.getAxisRight();
+        yr.setEnabled(false);
+        yr.setDrawAxisLine(false);
+        YAxis yl = setting_barChart.getAxisLeft();
+        yl.setDrawGridLines(false);
+        yl.setAxisMinimum(0f);
+        XAxis xAxis = setting_barChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        // disable zoom, set only 7 data is visible, and allow drag
+        setting_barChart.setVisibleXRangeMaximum(7);
+        setting_barChart.setScaleEnabled(false);
+
+
+        // listener for onHighlighted and show the highlighted value
+        setting_barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                barChart_current_textView.setText(String.format("Steps: %d",Math.round(e.getY())));
+            }
+
+            @Override
+            public void onNothingSelected() {
+                barChart_current_textView.setText("");
+            }
+        });
+        setting_barChart.invalidate();
     }
     private void setProfileImage(){
         Log.d(TAG, "setProfileImage: Called");
