@@ -1,5 +1,7 @@
 package com.project.miniCare.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,12 +27,16 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.project.miniCare.Data.UserSetting;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 import com.project.miniCare.Utils.SimpleToast;
 import com.project.miniCare.Utils.UniversalImageLoader;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +49,9 @@ public class UserFragment extends Fragment{
     private List<SettingClass> settings;
     private List<StepData> progress_data;
     private ImageView profilePhoto;
-    private TextView barChart_current_textView;
+    private TextView barChart_current_textView,profile_name;
+    private Button edit_profile;
+    private UserSetting userSetting;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +67,34 @@ public class UserFragment extends Fragment{
         profilePhoto = view.findViewById(R.id.profile_pic);
         setting_barChart = view.findViewById(R.id.setting_barChart_progress);
         barChart_current_textView = view.findViewById(R.id.setting_barChart_current);
+        edit_profile = view.findViewById(R.id.edit_profile_button);
+        profile_name = view.findViewById(R.id.profile_name);
 
         initImageLoader();
         initProgressBar();
-        initSetting();
+        loadData();
         setProfileImage();
+
+        edit_profile.setOnClickListener((View v)->{
+            Fragment edit_profile_fragment = new EditProfileFragment();
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment,edit_profile_fragment)
+                    .addToBackStack(null).commit();
+        });
+
+        // if there is nothing to load
+        if (userSetting==null){
+            // use the default value and save it
+            initSetting();
+            profile_name.setText(userSetting.getName());
+        }
+        else{
+            profile_name.setText(userSetting.getName());
+            settings = new ArrayList<>();
+            List<String> title = Arrays.asList(getResources().getStringArray(R.array.settingTitle));
+            settings.add(new SettingClass(title.get(0),userSetting.getEmail()));
+            settings.add(new SettingClass(title.get(1),userSetting.getPhoneNumber()));
+            settings.add(new SettingClass(title.get(2),userSetting.getDob()));
+        }
 
         recyclerView = view.findViewById(R.id.recycle_settings);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity()){
@@ -76,7 +108,7 @@ public class UserFragment extends Fragment{
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new settingsRecycleViewAdapter(settings));
 
-        // UI of progress
+        // UI of progressBar
         TextView average_step = view.findViewById(R.id.progressBar_stepAverage_textView);
         TextView personal_best = view.findViewById(R.id.progressBar_personalBest_textView);
         TextView total_step = view.findViewById(R.id.progressBar_totalStep_textView);
@@ -94,12 +126,6 @@ public class UserFragment extends Fragment{
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        ((MainActivity)getActivity()).changeTitle(R.string.user);
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         ((MainActivity)getActivity()).getSupportActionBar().show();
@@ -113,6 +139,27 @@ public class UserFragment extends Fragment{
         for (int i = 0; i < title.size();i++){
             settings.add(new SettingClass(title.get(i),value.get(i)));
         }
+        userSetting = new UserSetting(getResources().getString(R.string.default_name),value.get(0),value.get(1),value.get(2));
+
+        // save the data
+        saveData();
+    }
+
+    private void loadData(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("mimiCare", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("userSetting",null);
+        Type type = new TypeToken<UserSetting>() {}.getType();
+        userSetting = gson.fromJson(json,type);
+    }
+
+    private void saveData(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("mimiCare", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(userSetting);
+        editor.putString("userSetting",json);
+        editor.apply();
     }
 
     private void initImageLoader(){

@@ -1,22 +1,27 @@
 package com.project.miniCare.Fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.project.miniCare.R;
 import com.project.miniCare.Utils.SimpleToast;
+
+import java.text.DateFormat;
+import java.util.Calendar;
 
 // Fragment for Assignment Fragment
 public class AddDialog extends DialogFragment {
@@ -27,8 +32,10 @@ public class AddDialog extends DialogFragment {
     private ImageView cancel;
     private EditText input_title;
     private EditText input_target;
-    private EditText input_day;
+    private TextView input_day;
     public onInputSelected onInputSelected;
+    private DatePickerDialog.OnDateSetListener mDataSetListener;
+    private Calendar setCal;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,8 +46,31 @@ public class AddDialog extends DialogFragment {
         input_title = view.findViewById(R.id.input_assignment);
         input_target = view.findViewById(R.id.input_target);
         input_day = view.findViewById(R.id.input_day);
+        setCal = Calendar.getInstance();
+
+        // adjust the Date input
+        input_day.setText(getCurrentDate());
+        input_day.setOnClickListener((View v)->{
+            int year = setCal.get(Calendar.YEAR);
+            int month = setCal.get(Calendar.MONTH);
+            int day = setCal.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    getActivity(),
+                    mDataSetListener,
+                    year, month, day);
+            datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+            datePickerDialog.show();
+        });
+
+        // listener after picking the date
+        mDataSetListener = (DatePicker datePicker, int year, int month, int day)->{
+            setCal.set(year,month,day);
+            input_day.setText(DateFormat.getDateInstance().format(setCal.getTime()));
+        };
+
         add.setOnClickListener((View v)->{
-                if (!isEmpty(input_target)|!isEmpty(input_day)|!isEmpty(input_title)){
+                if (!isEmpty(input_target)|input_day.getText().toString().matches("")|!isEmpty(input_title)){
                     if (Integer.parseInt(input_target.getText().toString())<=0){
                         SimpleToast.show(getActivity(),"the target cannot be negative or zero",Toast.LENGTH_SHORT);
                         return;
@@ -48,7 +78,7 @@ public class AddDialog extends DialogFragment {
                     onInputSelected.sendInput(
                             input_title.getText().toString().trim(),
                             Integer.parseInt(input_target.getText().toString()),
-                            input_day.getText().toString().trim()
+                            setCal
                     );
                     getDialog().dismiss();
                 }
@@ -79,11 +109,16 @@ public class AddDialog extends DialogFragment {
     }
 
     public interface onInputSelected{
-        void sendInput(String title,int target, String day);
+        void sendInput(String title,int target, Calendar day);
     }
 
     private boolean isEmpty(EditText editText){
         return editText.getText().toString().trim().isEmpty();
+    }
+
+    private String getCurrentDate(){
+        Calendar calendar = Calendar.getInstance();
+        return DateFormat.getDateInstance().format(calendar.getTime());
     }
 
 }

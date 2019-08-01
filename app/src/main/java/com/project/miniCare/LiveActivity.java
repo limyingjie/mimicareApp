@@ -15,14 +15,17 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.project.miniCare.Data.Assignment;
 import com.project.miniCare.Utils.BluetoothDataHandler;
 import com.project.miniCare.Utils.MockStepGenerator;
 import com.project.miniCare.Services.SerialListener;
 import com.project.miniCare.Services.SerialService;
 import com.project.miniCare.Services.SerialSocket;
+import com.project.miniCare.Utils.SharedPreferenceHelper;
 import com.project.miniCare.Utils.StepChecker;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -45,9 +48,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean inExercise = false;
     private boolean isDone = false;
-    private int currentStep;
-    private int targetStep;
+    private int currentStep,targetStep,position,poor,good,perfect;
     private boolean inLowState = false;
+    private ArrayList<Assignment> mAssignment;
 
     // the correct step
     StepChecker stepChecker = new StepChecker(new int[]{0, 250, 500, 1000, 2000, 4000});
@@ -70,6 +73,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         setContentView(R.layout.fragment_live);
         // default value
         deviceAddress = null;
+        good = poor = perfect = 0;
         currentStep = 0;
         targetStep = 20;
 
@@ -80,10 +84,17 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             if (assignment!=null){
                 currentStep = assignment.getCurrent();
                 targetStep = assignment.getTarget();
+                perfect = assignment.getPerfect();
+                good = assignment.getGood();
+                poor = assignment.getPoor();
+                position = intent.getIntExtra("position",-1);
             }
             Log.d(TAG, "onCreate: " + deviceAddress);
             Log.d(TAG, "onCreate: " + assignment);
         }
+
+        // load Data
+        loadPreferenceData();
 
         // bind service
         bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -141,6 +152,14 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         super.onStop();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // stop the thread if it has started (they are exercising)
+        if (inExercise) mockDataRunnable.isActive = false;
+        // update and save the data
+        savePreferenceData();
+    }
 
     @Override
     public void onResume() {
@@ -165,7 +184,26 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         service = null;
     }
 
+    private void loadPreferenceData(){
+        mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this,"assignment",
+                new TypeToken<ArrayList<Assignment>>(){}.getType());
+    }
 
+    private void savePreferenceData(){
+        if (isDone){
+            mAssignment.remove(position);
+        }
+        else {
+            Assignment assignment = mAssignment.get(position);
+            assignment.setCurrent(currentStep);
+            assignment.setGood(good);
+            assignment.setPerfect(perfect);
+            assignment.setPoor(poor);
+            mAssignment.set(position,assignment);
+        }
+        SharedPreferenceHelper.savePreferenceData(this,"assignment",mAssignment);
+
+    }
     private void startExercise() {
         if (isMocking) {
             mockDataRunnable = new MockDataRunnable();
@@ -206,12 +244,18 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             switch (result){
                 case "PERFECT":
                     grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
+                    perfect+=1;
+                    Log.d(TAG, "updateProgress: p: " + perfect);
                     break;
                 case "GOOD":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondary));
+                    good+=1;
+                    Log.d(TAG, "updateProgress: g: " + good);
                     break;
                 case "POOR":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondaryVariant));
+                    poor+=1;
+                    Log.d(TAG, "updateProgress: pr: " + poor);
             }
         });
         if (currentStep >= pb.getMax()) {

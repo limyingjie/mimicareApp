@@ -1,6 +1,8 @@
 package com.project.miniCare.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,13 +18,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.project.miniCare.Adapters.AssignmentRecyclerAdapter;
 import com.project.miniCare.Data.Assignment;
 import com.project.miniCare.LiveActivity;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 public class AssignmentFragment extends Fragment implements AssignmentRecyclerAdapter.OnClickListener,AddDialog.onInputSelected{
@@ -34,9 +40,11 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
 
     //var
     private ArrayList<Assignment> mAssignments;
+    private ArrayList<Assignment> currentAssignments;
     private AssignmentRecyclerAdapter mAssignmentRecyclerAdapter;
     private Random random;
-
+    private Boolean needRefresh;
+    private View v;
     public AssignmentFragment() {
     }
 
@@ -53,10 +61,59 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_assignment,container,false);
-        mAssignments = new ArrayList<>();
-        initializeText();
+        currentAssignments = new ArrayList<>();
+        mAssignments = loadSharedPreferenceData();
+        // load from preference data
+        if (mAssignments==null){
+            initializeText();
+            saveSharedPreferenceData();
+            // clone
+            for (Assignment assignment:mAssignments){
+                currentAssignments.add(new Assignment(assignment));
+            }
+        }
+        else{
+            Log.d(TAG, "onCreateView: Called");
+            // check if there are expired assignment and remove it
+            for (int pos = 0; pos < mAssignments.size();pos++){
+                if (mAssignments.get(pos).getDate().compareTo(Calendar.getInstance())<0){
+                    mAssignments.remove(pos);
+                }
+            }
+            // clone
+            for (Assignment assignment:mAssignments){
+                currentAssignments.add(new Assignment(assignment));
+            }
+        }
+        // set that the Data has just been loaded and does not need refreshed
+        needRefresh = false;
         initRecyclerView(view);
+        v = view;
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // load from preference data if it need refresh
+        if (needRefresh){
+            Log.d(TAG, "onResume: Called");
+            mAssignments = loadSharedPreferenceData();
+            // clone
+            for (Assignment assignment:mAssignments){
+                currentAssignments.add(new Assignment(assignment));
+            }
+            // reload the recycleView
+            initRecyclerView(v);
+        }
+
+        Log.d(TAG, "onStart: Called");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: Called");
     }
 
     @Override
@@ -70,6 +127,41 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.menu = menu;
         inflater.inflate(R.menu.menu_assignment,menu);
+    }
+
+
+
+    @Override
+    public void onPause() {
+        // save the data when the fragment is paused
+        long start = System.currentTimeMillis();
+        // if there are no changes, then do not save the data
+        if (currentAssignments.size()!=mAssignments.size()){
+            Log.d(TAG, "onPause: save");
+            saveSharedPreferenceData();
+        }
+        else{
+            for (int i = 0; i < mAssignments.size(); i++){
+                Log.d(TAG, "onPause: Called" + i);
+                if (!mAssignments.get(i).equal(currentAssignments.get(i))){
+                    Log.d(TAG, "onPause: save");
+                    saveSharedPreferenceData();
+                }
+            }
+        }
+
+        long stop = System.currentTimeMillis();
+        Log.d(TAG, "onPause: Time Elapsed " + (stop-start));
+
+        // the data needs refresh later
+        needRefresh = true;
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: Called");
     }
 
     @Override
@@ -87,27 +179,34 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         Log.d(TAG, "onClickListener: Called");
         Intent intent = new Intent(getActivity(), LiveActivity.class);
         intent.putExtra("assignment",mAssignments.get(position));
+        intent.putExtra("position",position);
         startActivity(intent);
     }
 
     private void initializeText(){
+        mAssignments = new ArrayList<>();
         Log.d(TAG, "initializeText: Called!");
         random = new Random();
         int max = 100;
         int min = 10;
-        String[] days = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
         for (int i = 0; i < 5; i++){
             int num = random.nextInt(max-min)+min;
-            int num_day = random.nextInt(6);
             mAssignments.add(new Assignment(
                     "Walk",
                     num,
                     random.nextInt(num),
-                    days[num_day]
+                    randomizeFutureCalendar()
             ));
         }
     }
 
+    private Calendar randomizeFutureCalendar(){
+        Random newRandom = new Random();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, newRandom.nextInt(30));
+        calendar.add(Calendar.MONTH, newRandom.nextInt(2));
+        return calendar;
+    }
     private void insert(Assignment input){
         mAssignments.add(input);
         mAssignmentRecyclerAdapter.notifyItemInserted(mAssignments.size()-1);
@@ -115,6 +214,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
 
     private void remove(int position){
         mAssignments.remove(position);
+        Log.d(TAG, "remove: Called");
         mAssignmentRecyclerAdapter.notifyItemRemoved(position);
     }
 
@@ -156,7 +256,25 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     };
 
     @Override
-    public void sendInput(String title, int target, String day) {
+    public void sendInput(String title, int target, Calendar day) {
         insert(new Assignment(title,target,0,day));
+    }
+
+    private void saveSharedPreferenceData(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("mimiCare", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(mAssignments);
+        editor.putString("assignment",json);
+        editor.apply();
+    }
+
+    private ArrayList<Assignment> loadSharedPreferenceData(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("mimiCare", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("assignment",null);
+        Type type = new TypeToken<ArrayList<Assignment>>() {}.getType();
+        mAssignments = gson.fromJson(json,type);
+        return mAssignments;
     }
 }

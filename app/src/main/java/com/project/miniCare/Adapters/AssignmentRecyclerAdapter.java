@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.project.miniCare.Data.Assignment;
 import com.project.miniCare.R;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 // https://proandroiddev.com/recyclerview-pro-tips-part-1-8a291594bafc tips
 public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRecyclerAdapter.ViewHolder>{
@@ -46,7 +47,8 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
         viewHolder.assignment_title.setText(assignment_data.getName());
         viewHolder.assignment_progress.setMax(assignment_data.getTarget());
         viewHolder.assignment_progress.setProgress(assignment_data.getCurrent());
-        viewHolder.assignment_date.setText(assignment_data.getDate());
+        viewHolder.assignment_date.setText(DateFormat.getDateInstance().format(assignment_data.getDate().getTime()));
+        viewHolder.assignment_score.setText(String.format("Score: %d",assignment_data.getScore()));
         String step = context.getString(R.string.step);
         step = String.format(step,assignment_data.getCurrent(),assignment_data.getTarget());
         viewHolder.assignment_step.setText(step);
@@ -59,9 +61,7 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         MaterialCardView cardView;
         OnClickListener onClickListener;
-        TextView assignment_title;
-        TextView assignment_date;
-        TextView assignment_step;
+        TextView assignment_title, assignment_date, assignment_step, assignment_score;
         ProgressBar assignment_progress;
         Context context;
         public ViewHolder(@NonNull View itemView, OnClickListener onClickListener, Context context) {
@@ -71,6 +71,7 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
             assignment_date = itemView.findViewById(R.id.assignment_date);
             assignment_progress = itemView.findViewById(R.id.assignment_progress);
             assignment_step = itemView.findViewById(R.id.assignment_step);
+            assignment_score = itemView.findViewById(R.id.assignment_score);
             cardView = itemView.findViewById(R.id.assignment_parent);
             this.context = context;
             this.onClickListener = onClickListener;

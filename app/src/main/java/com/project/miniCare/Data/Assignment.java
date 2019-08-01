@@ -3,24 +3,44 @@ package com.project.miniCare.Data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Calendar;
+
 public class Assignment implements Parcelable {
     private String name;
     private int target;
     private int current;
-    private String data;
+    private Calendar date;
+    private int poor;
+    private int good;
+    private int perfect;
 
-    public Assignment(String name, int target, int current, String data) {
+    public Assignment(String name, int target, int current, Calendar date) {
         this.name = name;
         this.target = target;
         this.current = current;
-        this.data = data;
+        this.date = date;
+        this.poor = 0;
+        // when it is randomly initialize
+        this.good = current;
+        this.perfect = 0;
     }
 
+    public Assignment(Assignment assignment){
+        this.name = assignment.getName();
+        this.target = assignment.getTarget();
+        this.current = assignment.getCurrent();
+        this.date = assignment.getDate();
+        this.poor = assignment.getPoor();
+        this.good = assignment.getGood();
+        this.perfect = assignment.getPerfect();
+    }
     protected Assignment(Parcel in) {
         name = in.readString();
         target = in.readInt();
         current = in.readInt();
-        data = in.readString();
+        perfect = in.readInt();
+        good = in.readInt();
+        poor = in.readInt();
     }
 
     public static final Creator<Assignment> CREATOR = new Creator<Assignment>() {
@@ -45,7 +65,9 @@ public class Assignment implements Parcelable {
         parcel.writeString(name);
         parcel.writeInt(target);
         parcel.writeInt(current);
-        parcel.writeString(data);
+        parcel.writeInt(perfect);
+        parcel.writeInt(good);
+        parcel.writeInt(poor);
     }
     public String getName() {
         return name;
@@ -71,12 +93,58 @@ public class Assignment implements Parcelable {
         this.current = current;
     }
 
-    public String getDate() {
-        return data;
+    public Calendar getDate() {
+        return date;
     }
 
-    public void setDate(String data) {
-        this.data = data;
+    public void setDate(Calendar data) {
+        this.date = data;
+    }
+
+    public int getPoor() {
+        return poor;
+    }
+
+    public void setPoor(int poor) {
+        this.poor = poor;
+    }
+
+    public int getGood() {
+        return good;
+    }
+
+    public void setGood(int good) {
+        this.good = good;
+    }
+
+    public int getPerfect() {
+        return perfect;
+    }
+
+    public void setPerfect(int perfect) {
+        this.perfect = perfect;
+    }
+
+    public int getScore(){
+        if (this.current==0){
+            return 0;
+        }
+        return (this.perfect*100+this.good*50)/this.current;
+    }
+    public boolean equal(Assignment assignment){
+        if (this.name != assignment.name){
+            return false;
+        }
+        else if (this.target != assignment.target){
+            return false;
+        }
+        else if (this.current != assignment.current){
+            return false;
+        }
+        else if (this.date.compareTo(assignment.date)!=0){
+            return false;
+        }
+        return true;
     }
 
 }

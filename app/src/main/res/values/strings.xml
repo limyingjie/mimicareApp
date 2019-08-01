@@ -26,5 +26,8 @@
     <string name="stop_exercise">Stop Exercise</string>
     <string name="start_recording">Start Recording</string>
     <string name="stop_recording">Stop Recording</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="dob">Date of Birth</string>
 
 </resources>

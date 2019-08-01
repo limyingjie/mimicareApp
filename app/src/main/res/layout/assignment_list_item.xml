@@ -40,6 +40,13 @@
         android:progressDrawable="@drawable/custom_progressbar"
         style="?android:attr/progressBarStyleHorizontal"
         />
+
+        <TextView
+            android:id="@+id/assignment_score"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Score: 50" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

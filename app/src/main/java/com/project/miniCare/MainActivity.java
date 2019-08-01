@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -18,7 +19,7 @@ import com.project.miniCare.Fragments.UserFragment;
 import com.project.miniCare.Fragments.WalkFragment;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
-
+    private static final String TAG = "MainActivity";
     public String device;
     public Toolbar toolbar;
     public BottomNavigationViewEx bottomNav;
@@ -43,6 +44,18 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new DevicesFragment()).commit();
         else
             onBackStackChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: Called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: Called");
     }
 
     @Override
