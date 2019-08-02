@@ -40,10 +40,9 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
 
     //var
     private ArrayList<Assignment> mAssignments;
-    private ArrayList<Assignment> currentAssignments;
     private AssignmentRecyclerAdapter mAssignmentRecyclerAdapter;
     private Random random;
-    private Boolean needRefresh;
+    private Boolean needRefresh, isChanged;
     private View v;
     public AssignmentFragment() {
     }
@@ -61,16 +60,12 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_assignment,container,false);
-        currentAssignments = new ArrayList<>();
         mAssignments = loadSharedPreferenceData();
+        isChanged = false;
         // load from preference data
         if (mAssignments==null){
             initializeText();
             saveSharedPreferenceData();
-            // clone
-            for (Assignment assignment:mAssignments){
-                currentAssignments.add(new Assignment(assignment));
-            }
         }
         else{
             Log.d(TAG, "onCreateView: Called");
@@ -79,10 +74,6 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
                 if (mAssignments.get(pos).getDate().compareTo(Calendar.getInstance())<0){
                     mAssignments.remove(pos);
                 }
-            }
-            // clone
-            for (Assignment assignment:mAssignments){
-                currentAssignments.add(new Assignment(assignment));
             }
         }
         // set that the Data has just been loaded and does not need refreshed
@@ -99,10 +90,6 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         if (needRefresh){
             Log.d(TAG, "onResume: Called");
             mAssignments = loadSharedPreferenceData();
-            // clone
-            for (Assignment assignment:mAssignments){
-                currentAssignments.add(new Assignment(assignment));
-            }
             // reload the recycleView
             initRecyclerView(v);
         }
@@ -136,20 +123,10 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         // save the data when the fragment is paused
         long start = System.currentTimeMillis();
         // if there are no changes, then do not save the data
-        if (currentAssignments.size()!=mAssignments.size()){
-            Log.d(TAG, "onPause: save");
+        if (isChanged){
             saveSharedPreferenceData();
+            isChanged = false;
         }
-        else{
-            for (int i = 0; i < mAssignments.size(); i++){
-                Log.d(TAG, "onPause: Called" + i);
-                if (!mAssignments.get(i).equal(currentAssignments.get(i))){
-                    Log.d(TAG, "onPause: save");
-                    saveSharedPreferenceData();
-                }
-            }
-        }
-
         long stop = System.currentTimeMillis();
         Log.d(TAG, "onPause: Time Elapsed " + (stop-start));
 
@@ -209,11 +186,13 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     }
     private void insert(Assignment input){
         mAssignments.add(input);
+        isChanged = true;
         mAssignmentRecyclerAdapter.notifyItemInserted(mAssignments.size()-1);
     }
 
     private void remove(int position){
         mAssignments.remove(position);
+        isChanged = true;
         Log.d(TAG, "remove: Called");
         mAssignmentRecyclerAdapter.notifyItemRemoved(position);
     }
