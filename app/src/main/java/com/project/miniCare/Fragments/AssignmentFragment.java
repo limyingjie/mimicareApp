@@ -154,6 +154,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public void onClickListener(int position) {
         Log.d(TAG, "onClickListener: Called");
+        Log.d(TAG, "onClickListener: " + mAssignments.get(position).getRemainingTime());
         Intent intent = new Intent(getActivity(), LiveActivity.class);
         intent.putExtra("assignment",mAssignments.get(position));
         intent.putExtra("position",position);

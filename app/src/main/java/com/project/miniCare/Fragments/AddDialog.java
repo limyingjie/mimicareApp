@@ -49,17 +49,20 @@ public class AddDialog extends DialogFragment {
         setCal = Calendar.getInstance();
 
         // adjust the Date input
-        input_day.setText(getCurrentDate());
+        input_day.setText(getOneDayAfterCurrentDate());
         input_day.setOnClickListener((View v)->{
-            int year = setCal.get(Calendar.YEAR);
-            int month = setCal.get(Calendar.MONTH);
-            int day = setCal.get(Calendar.DAY_OF_MONTH);
+            Calendar minDate = Calendar.getInstance();
+            minDate.add(Calendar.DATE,1);
+            int year = minDate.get(Calendar.YEAR);
+            int month = minDate.get(Calendar.MONTH);
+            int day = minDate.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     getActivity(),
                     mDataSetListener,
                     year, month, day);
-            datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+
+            datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
             datePickerDialog.show();
         });
 
@@ -116,8 +119,9 @@ public class AddDialog extends DialogFragment {
         return editText.getText().toString().trim().isEmpty();
     }
 
-    private String getCurrentDate(){
+    private String getOneDayAfterCurrentDate(){
         Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,1);
         return DateFormat.getDateInstance().format(calendar.getTime());
     }
 

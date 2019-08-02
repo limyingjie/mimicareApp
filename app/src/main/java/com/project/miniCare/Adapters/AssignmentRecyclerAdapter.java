@@ -47,7 +47,7 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
         viewHolder.assignment_title.setText(assignment_data.getName());
         viewHolder.assignment_progress.setMax(assignment_data.getTarget());
         viewHolder.assignment_progress.setProgress(assignment_data.getCurrent());
-        viewHolder.assignment_date.setText(DateFormat.getDateInstance().format(assignment_data.getDate().getTime()));
+        viewHolder.assignment_date.setText(assignment_data.getRemainingTime());
         viewHolder.assignment_score.setText(String.format("Score: %d",assignment_data.getScore()));
         String step = context.getString(R.string.step);
         step = String.format(step,assignment_data.getCurrent(),assignment_data.getTarget());

@@ -2,10 +2,13 @@ package com.project.miniCare.Data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.DateUtils;
+import android.util.Log;
 
 import java.util.Calendar;
 
 public class Assignment implements Parcelable {
+    private static final String TAG = "Assignment";
     private String name;
     private int target;
     private int current;
@@ -14,6 +17,7 @@ public class Assignment implements Parcelable {
     private int good;
     private int perfect;
 
+    // may consider use https://github.com/JakeWharton/ThreeTenABP instead of calendar
     public Assignment(String name, int target, int current, Calendar date) {
         this.name = name;
         this.target = target;
@@ -25,15 +29,6 @@ public class Assignment implements Parcelable {
         this.perfect = 0;
     }
 
-    public Assignment(Assignment assignment){
-        this.name = assignment.getName();
-        this.target = assignment.getTarget();
-        this.current = assignment.getCurrent();
-        this.date = assignment.getDate();
-        this.poor = assignment.getPoor();
-        this.good = assignment.getGood();
-        this.perfect = assignment.getPerfect();
-    }
     protected Assignment(Parcel in) {
         name = in.readString();
         target = in.readInt();
@@ -131,20 +126,26 @@ public class Assignment implements Parcelable {
         }
         return (this.perfect*100+this.good*50)/this.current;
     }
-    public boolean equal(Assignment assignment){
-        if (this.name != assignment.name){
-            return false;
+
+    public String getRemainingTime(){
+        Calendar calendar = Calendar.getInstance();
+        if (this.date.after(calendar)){
+            long timeDiff = this.date.getTimeInMillis() - calendar.getTimeInMillis();
+            int daysLeft = (int) (timeDiff / DateUtils.DAY_IN_MILLIS);
+            if (daysLeft<1){
+                int hour = (int) (timeDiff/DateUtils.HOUR_IN_MILLIS);
+                if (hour == 0){
+                    return "<1 hours";
+                }
+                else{
+                    return hour + " hours";
+                }
+            }
+            Log.d(TAG, "getRemainingTime: " + daysLeft);
+            return daysLeft + " days";
         }
-        else if (this.target != assignment.target){
-            return false;
-        }
-        else if (this.current != assignment.current){
-            return false;
-        }
-        else if (this.date.compareTo(assignment.date)!=0){
-            return false;
-        }
-        return true;
+        // it means it is in the past
+        return "the past";
     }
 
 }
