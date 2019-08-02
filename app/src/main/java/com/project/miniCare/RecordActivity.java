@@ -84,8 +84,9 @@ public class RecordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        saveData();
-        loadData();
+        if (currentStep!=0){
+            saveData();
+        }
     }
 
     // save and append
