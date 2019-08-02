@@ -65,7 +65,7 @@ public class AddDialog extends DialogFragment {
 
         // listener after picking the date
         mDataSetListener = (DatePicker datePicker, int year, int month, int day)->{
-            setCal.set(year,month,day);
+            setCal.set(year,month,day,23,59,59);
             input_day.setText(DateFormat.getDateInstance().format(setCal.getTime()));
         };
 

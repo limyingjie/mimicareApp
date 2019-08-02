@@ -182,6 +182,9 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, newRandom.nextInt(30));
         calendar.add(Calendar.MONTH, newRandom.nextInt(2));
+        calendar.set(Calendar.HOUR_OF_DAY,23);
+        calendar.set(Calendar.MINUTE,59);
+        calendar.set(Calendar.SECOND,59);
         return calendar;
     }
     private void insert(Assignment input){
