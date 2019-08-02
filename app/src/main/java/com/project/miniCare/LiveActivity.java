@@ -48,6 +48,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean inExercise = false;
     private boolean isDone = false;
+    private boolean inAssignment;
     private int currentStep,targetStep,position,poor,good,perfect;
     private boolean inLowState = false;
     private ArrayList<Assignment> mAssignment;
@@ -81,7 +82,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         if (intent!=null) {
             deviceAddress = intent.getStringExtra("device");
             Assignment assignment = intent.getParcelableExtra("assignment");
+            inAssignment = false;
             if (assignment!=null){
+                inAssignment = true;
                 currentStep = assignment.getCurrent();
                 targetStep = assignment.getTarget();
                 perfect = assignment.getPerfect();
@@ -94,7 +97,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         }
 
         // load Data
-        loadPreferenceData();
+        if (inAssignment){
+            loadPreferenceData();
+        }
 
         // bind service
         bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -157,8 +162,11 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         super.onPause();
         // stop the thread if it has started (they are exercising)
         if (inExercise) mockDataRunnable.isActive = false;
-        // update and save the data
-        savePreferenceData();
+        // update and save the data if there is an intent from assignment
+        if (inAssignment){
+            Log.d(TAG, "onPause: Save");
+            savePreferenceData();
+        }
     }
 
     @Override
@@ -185,6 +193,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void loadPreferenceData(){
+        Log.d(TAG, "loadPreferenceData: Load");
         mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this,"assignment",
                 new TypeToken<ArrayList<Assignment>>(){}.getType());
     }

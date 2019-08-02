@@ -44,10 +44,19 @@ public class RecordData {
 
     public int[] getLatest(){
         if (pressures.isEmpty()){
-            return new int[] {0,0,0,0,0,0};
+            return null;
         }
         else{
             return pressures.get(pressures.size()-1);
+        }
+    }
+
+    public ArrayList<int[]> getAll(){
+        if (pressures.isEmpty()){
+            return null;
+        }
+        else{
+            return pressures;
         }
     }
 }

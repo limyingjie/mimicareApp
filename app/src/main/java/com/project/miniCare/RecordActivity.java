@@ -1,5 +1,6 @@
 package com.project.miniCare;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,11 +10,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.project.miniCare.Data.RecordData;
 import com.project.miniCare.Utils.MockStepGenerator;
+import com.project.miniCare.Utils.SimpleToast;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RecordActivity extends AppCompatActivity {
@@ -70,6 +81,77 @@ public class RecordActivity extends AppCompatActivity {
         if (inRecord) stopRecord();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveData();
+        loadData();
+    }
+
+    // save and append
+    private void saveData() {
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput("pressureRight.txt", Context.MODE_PRIVATE|Context.MODE_APPEND);
+            StringBuilder sb = new StringBuilder();
+            for (int[] data : recordData.getAll()){
+                for (int i=0; i<data.length;i++){
+                    sb.append(data[i]);
+                    if (i < data.length-1){
+                        sb.append(",");
+                    }
+                    else{
+                        sb.append("\n");
+                    }
+                }
+            }
+            fos.write(sb.toString().getBytes());
+            Log.d(TAG, "saveData: Called");
+            SimpleToast.show(this,"Saved to: " + getFilesDir() + "/" + "pressureRight.txt",Toast.LENGTH_SHORT);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos!=null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void loadData(){
+        FileInputStream fis = null;
+        String output = null;
+        try{
+            fis = openFileInput("pressureRight.txt");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while((line = br.readLine())!=null){
+                sb.append(line).append("\n");
+            }
+            output = sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fis!=null){
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Log.d(TAG, "loadData: \n" + output);
+    }
     private void onClick(){
         Log.d(TAG, "onClick: Called");
         if(isDone)return;

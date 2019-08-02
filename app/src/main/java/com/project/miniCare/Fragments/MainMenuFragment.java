@@ -3,6 +3,7 @@ package com.project.miniCare.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.project.miniCare.Data.History;
 import com.project.miniCare.LiveActivity;
 import com.project.miniCare.MainActivity;
 import com.project.miniCare.R;
@@ -37,6 +39,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     private TextView speechBubbleRight;
     private Button record_button;
     private Button golive_button;
+    private Boolean inAnimation;
 
     @Override
     public void onStartHandler() {
@@ -57,6 +60,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             this.message = message;
         }
         public void run() {
+            Log.d(TAG, "run: Show: "+Thread.currentThread().getId());
             speechBubble.setText(message);
             speechBubble.setVisibility(View.VISIBLE);
         }
@@ -67,6 +71,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             this.speechBubble = speechBubble;
         }
         public void run() {
+            Log.d(TAG, "run: Hide: "+Thread.currentThread().getId());
             speechBubble.setVisibility(View.INVISIBLE);
         }
     };
@@ -76,10 +81,12 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         public void run() {
             try {
                 int i = rng.nextInt(messages.length);
-                handler.postDelayed(new ShowSpeech(speechBubbleLeft, messages[i][0]), 0);
-                handler.postDelayed(new ShowSpeech(speechBubbleRight, messages[i][1]), 1000);
-                handler.postDelayed(new HideSpeech(speechBubbleLeft), 6000);
-                handler.postDelayed(new HideSpeech(speechBubbleRight), 6000);
+                Handler mHandler = new Handler(Looper.getMainLooper());
+                Log.d(TAG, "run: "+Thread.currentThread().getId());
+                mHandler.postDelayed(new ShowSpeech(speechBubbleLeft, messages[i][0]), 0);
+                mHandler.postDelayed(new ShowSpeech(speechBubbleRight, messages[i][1]), 1000);
+                mHandler.postDelayed(new HideSpeech(speechBubbleLeft), 6000);
+                mHandler.postDelayed(new HideSpeech(speechBubbleRight), 6000);
             } finally {
                 handler.postDelayed(Speak, (long) rng.nextFloat()*(maxInterval-minInterval)+minInterval);
             }
@@ -101,8 +108,23 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     }
 
     @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: Called");
+        if (!inAnimation){
+            onStartHandler();
+            inAnimation = true;
+        }
+        super.onResume();
+    }
+
+    @Override
     public void onPause() {
         Log.d(TAG, "onPause: Called");
+        // stop the handler
+        if (inAnimation){
+            onStopHandler();
+            inAnimation = false;
+        }
         super.onPause();
     }
 
@@ -115,7 +137,6 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Called");
-        onStopHandler();
         super.onDestroy();
     }
     /*
@@ -134,6 +155,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             intent.putExtra("device",((MainActivity)getActivity()).device);
             startActivity(intent);
         });
+        inAnimation = true;
         onStartHandler();
         return view;
     }
