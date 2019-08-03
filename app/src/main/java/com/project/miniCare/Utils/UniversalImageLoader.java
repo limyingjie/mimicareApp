@@ -17,7 +17,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.project.miniCare.R;
 
 public class UniversalImageLoader {
-    private static final int defaultImage = R.drawable.ic_default_user;
+    private static final int defaultImage = R.drawable.android;
     private Context mContext;
 
     public UniversalImageLoader(Context context){
