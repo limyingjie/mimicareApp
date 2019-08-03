@@ -132,6 +132,7 @@ public class UserFragment extends Fragment{
     }
 
     private void initSetting(){
+        // this is called when there is no UserSetting data
         settings = new ArrayList<>();
         List<String> title = Arrays.asList(getResources().getStringArray(R.array.settingTitle));
         List<String> value = Arrays.asList(getResources().getStringArray(R.array.settingValue));
@@ -139,8 +140,9 @@ public class UserFragment extends Fragment{
         for (int i = 0; i < title.size();i++){
             settings.add(new SettingClass(title.get(i),value.get(i)));
         }
-        userSetting = new UserSetting(getResources().getString(R.string.default_name),value.get(0),value.get(1),value.get(2));
 
+        String imageUrl = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/01/31/14/panda-bamboo.jpg";
+        userSetting = new UserSetting(getResources().getString(R.string.default_name),value.get(0),value.get(1),value.get(2),imageUrl);
         // save the data
         saveData();
     }
@@ -165,6 +167,12 @@ public class UserFragment extends Fragment{
     private void initImageLoader(){
         UniversalImageLoader universalImageLoader = new UniversalImageLoader(getActivity());
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
+    private void setProfileImage(){
+        Log.d(TAG, "setProfileImage: Called");
+        // Call data from the shared Preference
+        UniversalImageLoader.setImage(userSetting.getProfile_photo_uri(),profilePhoto,null,"");
     }
 
     private void initStepData(){
@@ -224,12 +232,6 @@ public class UserFragment extends Fragment{
             }
         });
         setting_barChart.invalidate();
-    }
-    private void setProfileImage(){
-        Log.d(TAG, "setProfileImage: Called");
-        String imageUrl = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/01/31/14/panda-bamboo.jpg";
-        UniversalImageLoader.setImage(imageUrl,profilePhoto,null,"");
-
     }
 
     // Data

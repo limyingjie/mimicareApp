@@ -1,24 +1,26 @@
 package com.project.miniCare.Data;
 
 public class UserSetting {
-    private String Name;
+    private String name;
     private String email;
     private String phoneNumber;
     private String dob;
+    private String profile_photo_uri;
 
-    public UserSetting(String name, String email, String phoneNumber, String dob) {
-        Name = name;
+    public UserSetting(String name, String email, String phoneNumber, String dob, String profile_photo_uri) {
+        this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.dob = dob;
+        this.profile_photo_uri = profile_photo_uri;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getEmail() {
@@ -43,5 +45,13 @@ public class UserSetting {
 
     public void setDob(String dob) {
         this.dob = dob;
+    }
+
+    public String getProfile_photo_uri() {
+        return profile_photo_uri;
+    }
+
+    public void setProfile_photo_uri(String profile_photo_uri) {
+        this.profile_photo_uri = profile_photo_uri;
     }
 }
