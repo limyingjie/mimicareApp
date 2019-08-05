@@ -69,9 +69,8 @@
         android:layout_alignTop="@+id/feet"
         android:layout_marginStart="250dp"
         android:layout_marginTop="280dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_red"
         android:gravity="center"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="20sp" />
 
@@ -83,9 +82,8 @@
         android:layout_alignTop="@+id/feet"
         android:layout_marginStart="230dp"
         android:layout_marginTop="95dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_red"
         android:gravity="center"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="20sp" />
 
@@ -97,9 +95,8 @@
         android:layout_alignTop="@+id/feet"
         android:layout_marginStart="210dp"
         android:layout_marginTop="25dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_red"
         android:gravity="center"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="20sp" />
 
@@ -111,9 +108,8 @@
         android:layout_alignTop="@+id/feet"
         android:layout_marginStart="280dp"
         android:layout_marginTop="55dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_red"
         android:gravity="center"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="20sp" />
 
@@ -125,9 +121,8 @@
         android:layout_alignTop="@+id/feet"
         android:layout_marginStart="280dp"
         android:layout_marginTop="125dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_red"
         android:gravity="center"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="20sp" />
 
@@ -139,9 +134,8 @@
         android:layout_alignTop="@+id/feet"
         android:layout_marginStart="275dp"
         android:layout_marginTop="195dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_red"
         android:gravity="center"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="20sp" />
 

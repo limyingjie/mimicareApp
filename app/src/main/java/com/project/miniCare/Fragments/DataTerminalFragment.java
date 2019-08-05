@@ -2,10 +2,12 @@ package com.project.miniCare.Fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -24,12 +26,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.project.miniCare.Services.SerialListener;
 import com.project.miniCare.Services.SerialService;
 import com.project.miniCare.Services.SerialSocket;
 import com.project.miniCare.R;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 
 public class DataTerminalFragment extends Fragment implements ServiceConnection, SerialListener {
     private static final String TAG = "DataTerminalFragment";
@@ -44,6 +56,7 @@ public class DataTerminalFragment extends Fragment implements ServiceConnection,
     private SerialService service;
     private boolean initialStart = true;
     private Connected connected = Connected.False;
+    private Button load,clear;
 
     public DataTerminalFragment() {
     }
@@ -133,9 +146,46 @@ public class DataTerminalFragment extends Fragment implements ServiceConnection,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_data, container, false);
+        // initialize UI
         receiveText = view.findViewById(R.id.receive_text);                          // TextView performance decreases with number of spans
-        receiveText.setTextColor(getResources().getColor(R.color.colorRecieveText)); // set as default color to reduce number of spans
+        load = view.findViewById(R.id.button_load);
+        clear = view.findViewById(R.id.button_clear);
+
+        receiveText.setTextColor(getResources().getColor(R.color.colorText)); // set as default color to reduce number of spans
         receiveText.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        // set onClick listener
+        load.setOnClickListener((View v)->{
+            // check the files inside the directory
+            File file = new File(getActivity().getFilesDir().toURI());
+            ArrayList<String> file_choices = new ArrayList<>();
+            for (File f:file.listFiles()){
+                if (f.getName().endsWith(".txt")){
+                    file_choices.add(f.getName());
+                }
+            }
+
+            // default selected position
+            Log.d(TAG, "onCreateView: " + file_choices);
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle("Select the File that you want to load")
+                    .setSingleChoiceItems(file_choices.toArray(new String[0]), 0, null)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            int position = ((AlertDialog)dialogInterface).getListView().getCheckedItemPosition();
+                            Log.d(TAG, "onClick: " + position);
+                            load(file_choices.get(position));
+                        }
+                    });
+            Dialog alert = alertDialog.create();
+            alert.setCanceledOnTouchOutside(false);
+            alert.show();
+        });
+        clear.setOnClickListener((View v)->{
+            receiveText.setText("");
+        });
         return view;
     }
 
@@ -168,6 +218,38 @@ public class DataTerminalFragment extends Fragment implements ServiceConnection,
 
     private void receive(byte[] data) {
         receiveText.append(new String(data));
+    }
+
+    private void load(String name){
+        FileInputStream fis = null;
+        String output = null;
+        try{
+            fis = getActivity().openFileInput(name);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while((line = br.readLine())!=null){
+                sb.append(line).append("\n");
+            }
+            output = sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fis!=null){
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Log.d(TAG, "loadData: \n" + output);
+        receiveText.append("Open "+getActivity().getFilesDir() + "/" + name + newline);
+        receiveText.append(output);
     }
 
     private void status(String str) {

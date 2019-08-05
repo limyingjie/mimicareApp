@@ -294,7 +294,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             Log.d(TAG, "process_data: " + currentStep);
             updateProgress(result);
         }
-        updatePressureText(pressureData);
+        updatePressureText(pressureData,nowInLowState);
     }
 
     private boolean isAllZero(int[] pressure){
@@ -342,13 +342,25 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         Log.d("L", str);
     }
 
-    private void updatePressureText(int[] pressureData) {
+    private void updatePressureText(int[] pressureData, Boolean in_low_state) {
         for (int i = 0; i < 6; i++) {
-            int ScaledPressure = pressureData[i] / 200;
-            pressureTexts[i].setText(String.format(Locale.US, "%d", ScaledPressure));
+            //int ScaledPressure = pressureData[i] / 200;
+            //pressureTexts[i].setText(String.format(Locale.US, "%d", ScaledPressure));
+            if (in_low_state){
+                switch (stepChecker.checkIndividual(i,pressureData[i])){
+                    case "perfect":
+                        pressureTexts[i].setBackground(getResources().getDrawable(R.drawable.circle_green));
+                        break;
+                    case "good":
+                        pressureTexts[i].setBackground(getResources().getDrawable(R.drawable.circle_yellow));
+                        break;
+                    case "poor":
+                        pressureTexts[i].setBackground(getResources().getDrawable(R.drawable.circle_red));
+                        break;
+                }
+            }
         }
     }
-
     /*
      * SerialListener
      */

@@ -3,6 +3,7 @@ package com.project.miniCare;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.project.miniCare.Utils.MockStepGenerator;
 import com.project.miniCare.Utils.SimpleToast;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -93,7 +95,7 @@ public class RecordActivity extends AppCompatActivity {
     private void saveData() {
         FileOutputStream fos = null;
         try {
-            fos = openFileOutput("pressureRight.txt", Context.MODE_PRIVATE|Context.MODE_APPEND);
+            fos = openFileOutput("pressureRight.txt", Context.MODE_PRIVATE);
             StringBuilder sb = new StringBuilder();
             for (int[] data : recordData.getAll()){
                 for (int i=0; i<data.length;i++){
@@ -108,7 +110,15 @@ public class RecordActivity extends AppCompatActivity {
             }
             fos.write(sb.toString().getBytes());
             Log.d(TAG, "saveData: Called");
-            SimpleToast.show(this,"Saved to: " + getFilesDir() + "/" + "pressureRight.txt",Toast.LENGTH_SHORT);
+
+            SimpleToast.show(this,"Saved to: " + getFilesDir()+ "/" + "pressureRight.txt",Toast.LENGTH_SHORT);
+
+            // check every file inside
+            File file = new File(getFilesDir().toURI());
+            File[] listFile = file.listFiles();
+            for (int i=0; i<listFile.length;i++){
+                Log.d(TAG, "saveData: " + listFile[i].getAbsolutePath());
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -33,4 +33,17 @@ public class StepChecker {
         }
         return result;
     }
+
+    public String checkIndividual(int position, int step){
+        int diff = Math.abs(step - correctStepPressure[position]);
+        if (diff < 1000){
+            return "perfect";
+        }
+        else if (diff < 2000){
+            return "good";
+        }
+        else{
+            return "poor";
+        }
+    }
 }
