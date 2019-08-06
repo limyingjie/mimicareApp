@@ -14,5 +14,5 @@
         android:gravity="center"
         android:text="@string/devices"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorTextTitle" />
+        android:textColor="@color/colorText" />
 </LinearLayout>

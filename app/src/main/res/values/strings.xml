@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Minicare</string>
-    <string name="devices">Bluetooth Devices</string>
+    <string name="app_name">MimiCare</string>
+    <string name="devices">BluetoothLE Devices</string>
     <string name="user">User</string>
     <string name="walk">Walk</string>
     <string name="scan">Scan</string>

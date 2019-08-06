@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.project.miniCare">
+    package="com.project.mimiCare">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -19,13 +19,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name="com.project.miniCare.MainActivity"
+            android:name="com.project.mimiCare.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden|adjustPan"
             >
 
         </activity>
-        <activity android:name=".LoginActivity"
+        <activity android:name="com.project.mimiCare.LoginActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden|adjustPan">
             <intent-filter>
@@ -33,11 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LiveActivity" />
-        <activity android:name=".RecordActivity" />
+        <activity android:name="com.project.mimiCare.RegisterActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
+        <activity android:name="com.project.mimiCare.LiveActivity" />
+        <activity android:name="com.project.mimiCare.RecordActivity" />
 
-        <service android:name="com.project.miniCare.Services.SerialService" />
+        <service android:name="com.project.mimiCare.Services.SerialService" />
     </application>
 
 </manifest>
