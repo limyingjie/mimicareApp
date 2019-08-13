@@ -7,13 +7,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/speechleft"
         android:layout_width="200dp"
         android:layout_height="0dp"
         android:layout_above="@+id/smileyfeet"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="8dp"
         android:layout_marginBottom="320dp"
         android:background="@drawable/speechleft"
         android:gravity="center"
@@ -23,7 +31,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/smileyfeet"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <TextView
         android:id="@+id/speechright"
@@ -31,7 +39,6 @@
         android:layout_height="0dp"
         android:layout_above="@+id/smileyfeet"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="320dp"
         android:background="@drawable/speechright"
         android:gravity="center"
@@ -41,7 +48,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/smileyfeet"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <ImageView
         android:id="@+id/smileyfeet"
@@ -96,5 +103,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/BLEstatus_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="TextView"
+        android:textColor="@color/colorTextTitle"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
+    <Button
+        android:id="@+id/BLEscan_button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/button_selector_white"
+        android:text="@string/scan"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@id/view" />
 
 </android.support.constraint.ConstraintLayout>

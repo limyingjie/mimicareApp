@@ -1,7 +1,11 @@
 package com.project.mimiCare.Fragments;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,6 +50,8 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     private View v;
     public AssignmentFragment() {
     }
+
+
 
     // save the fragment and thee bundle
     @Override

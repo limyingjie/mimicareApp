@@ -1,6 +1,5 @@
 package com.project.mimiCare;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,23 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.project.mimiCare.Data.RecordData;
 import com.project.mimiCare.Utils.MockStepGenerator;
-import com.project.mimiCare.Utils.SimpleToast;
+import com.project.mimiCare.Utils.SharedPreferenceHelper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class RecordActivity extends AppCompatActivity {
     private static final String TAG = "RecordActivityMimicare";
+    private static final String subKey = "recordData";
 
     private boolean inRecord;
     private int currentStep;
@@ -82,12 +74,10 @@ public class RecordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (currentStep!=0){
-            saveData();
-        }
     }
 
-    // save and append
+    // save and append as a text file
+    /**
     private void saveData() {
         FileOutputStream fos = null;
         try {
@@ -159,6 +149,7 @@ public class RecordActivity extends AppCompatActivity {
         }
         Log.d(TAG, "loadData: \n" + output);
     }
+**/
     private void onClick(){
         Log.d(TAG, "onClick: Called");
         if(isDone)return;
@@ -242,6 +233,8 @@ public class RecordActivity extends AppCompatActivity {
                     record_step_text.setText("Done!");
                     record_data_text.setText("Average: " + Arrays.toString(average));
                 });
+                // save Average Data
+                SharedPreferenceHelper.savePreferenceData(this, subKey,average);
 
                 // stop the thread
                 stopRecord();

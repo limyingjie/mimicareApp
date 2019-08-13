@@ -1,6 +1,15 @@
 package com.project.mimiCare.Fragments;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.project.mimiCare.LiveActivity;
 import com.project.mimiCare.MainActivity;
@@ -20,10 +30,17 @@ import com.project.mimiCare.R;
 import com.project.mimiCare.RecordActivity;
 import com.project.mimiCare.Utils.changeHandler;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MainMenuFragment extends Fragment implements changeHandler {
     private static final String TAG = "MainMenuFragment";
+    private static String name = "ES32Testbed";
+    private BluetoothAdapter bluetoothAdapter;
+    private BroadcastReceiver bleDiscoveryBroadcastReceiver;
+    private IntentFilter bleDiscoveryIntentFilter;
+    private BluetoothDevice myDevice;
+
     private String[][] messages = {
             {"The weather\nlooks good~", "Let's go for\na walk shall we?"},
             {"Ahhh...\nI am starving...", "Shall we go\nget some food?"},
@@ -36,9 +53,13 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     private Random rng = new Random();
     private TextView speechBubbleLeft;
     private TextView speechBubbleRight;
+    private TextView BLEstatus;
+    private Button scan;
     private Button record_button;
     private Button golive_button;
     private Boolean inAnimation;
+    private Boolean inScanning = false;
+
 
     @Override
     public void onStartHandler() {
@@ -96,6 +117,65 @@ public class MainMenuFragment extends Fragment implements changeHandler {
 
     }
 
+    private void stopScan() {
+        if (myDevice==null){
+            BLEstatus.setText("No device is found");
+        }
+        scan.setVisibility(View.VISIBLE);
+        bluetoothAdapter.cancelDiscovery();
+        inScanning = false;
+    }
+
+    private void startScan() {
+        // check the build version
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(getText(R.string.location_permission_title));
+                builder.setMessage(getText(R.string.location_permission_message));
+                // requestPermission
+                Log.d(TAG, "startScan: check");
+                builder.setPositiveButton(android.R.string.ok,
+                        (dialog, which) -> requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0));
+                builder.show();
+                return;
+            }
+            if (!bluetoothAdapter.isEnabled()){
+                Log.d(TAG, "startScan: check");
+                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(intent,0);
+                return;
+            }
+        }
+        Log.d(TAG, "startScan: done checking");
+        BLEstatus.setText("Scanning");
+        bluetoothAdapter.startDiscovery();
+        inScanning = true;
+        //  BluetoothLeScanner.startScan(...) would return more details, but that's not needed here
+        //  why?
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode==0){
+            startScan();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        // ignore requestCode as there is only one in this fragment
+        // run the start scan again after the permission has been given
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            new Handler(Looper.getMainLooper()).postDelayed(this::startScan,1); // run after onResume to avoid wrong empty-text
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(getText(R.string.location_denied_title));
+            builder.setMessage(getText(R.string.location_denied_message));
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.show();
+        }
+    }
     /*
      * Lifecycle
      */
@@ -104,6 +184,38 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
+        myDevice = null;
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bleDiscoveryBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    // remove all that are bluetooth classic
+                    // probably still need BluetoothLEscanner to scan specific UUID
+                    if(device.getType() != BluetoothDevice.DEVICE_TYPE_CLASSIC) {
+                        Log.d(TAG, "onReceive: " + device);
+                        // check the device name
+                        if (device.getName() == name){
+                            // do something here
+                            // set Text as connecting then connected and saved the device address
+                            BLEstatus.setText("Device found");
+                            // start connecting
+                            myDevice = device;
+                        }
+                    }
+                }
+                // when it is done (found something), stop the scan
+                if(intent.getAction().equals((BluetoothAdapter.ACTION_DISCOVERY_FINISHED))) {
+                    // check if the device is there
+                    stopScan();
+                }
+            }
+        };
+        bleDiscoveryIntentFilter = new IntentFilter();
+        // add the intent action
+        bleDiscoveryIntentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        bleDiscoveryIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
     }
 
     @Override
@@ -113,9 +225,25 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             onStartHandler();
             inAnimation = true;
         }
+        // register the receiver and set the emptyText
+        getActivity().registerReceiver(bleDiscoveryBroadcastReceiver, bleDiscoveryIntentFilter);
+        if(bluetoothAdapter == null || !getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
+            Log.d(TAG, "onResume: <bluetooth LE not supported>");
+            BLEstatus.setText("Bluetooth LE is not supported");}
+        else if(!bluetoothAdapter.isEnabled()){
+            Log.d(TAG, "onResume: <bluetooth is disabled>");
+            BLEstatus.setText("Bluetoorh is disabled");}
+        else
+            Log.d(TAG, "onResume: <use SCAN to refresh devices>");
         super.onResume();
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((MainActivity)getActivity()).getSupportActionBar().show();
+    }
     @Override
     public void onPause() {
         Log.d(TAG, "onPause: Called");
@@ -124,6 +252,10 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             onStopHandler();
             inAnimation = false;
         }
+        // stop the scan and stop the bluetooth broadcast
+        if (inScanning)
+            stopScan();
+        getActivity().unregisterReceiver(bleDiscoveryBroadcastReceiver);
         super.onPause();
     }
 
@@ -148,10 +280,23 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         speechBubbleRight = view.findViewById(R.id.speechright);
         record_button = view.findViewById(R.id.record_button);
         golive_button = view.findViewById(R.id.golive);
+        BLEstatus = view.findViewById(R.id.BLEstatus_text);
+        scan = view.findViewById(R.id.BLEscan_button);
+        scan.setVisibility(View.GONE);
+
+        startScan();
+        scan.setOnClickListener((View v)->{
+            startScan();
+            scan.setVisibility(View.GONE);
+        });
         record_button.setOnClickListener((View v)-> startActivity(new Intent(getActivity(), RecordActivity.class)));
         golive_button.setOnClickListener((View v)-> {
+            if (myDevice==null){
+                Toast.makeText(getActivity(),"No device is found",Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(getActivity(), LiveActivity.class);
-            intent.putExtra("device",((MainActivity)getActivity()).device);
+            intent.putExtra("device",myDevice);
             startActivity(intent);
         });
         inAnimation = true;

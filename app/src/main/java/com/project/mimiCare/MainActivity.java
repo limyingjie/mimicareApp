@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.project.mimiCare.Fragments.AssignmentFragment;
 import com.project.mimiCare.Fragments.DevicesFragment;
+import com.project.mimiCare.Fragments.MainMenuFragment;
 import com.project.mimiCare.Fragments.UserFragment;
 import com.project.mimiCare.Fragments.WalkFragment;
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         // code from Simple BLE
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new DevicesFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new MainMenuFragment()).commit();
         else
             onBackStackChanged();
     }
@@ -75,11 +76,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     Fragment selectedFragment = null;
                     switch (menuItem.getItemId()){
-                        case R.id.item_scan:
-                            selectedFragment = new DevicesFragment();
-                            break;
                         case R.id.item_walk:
-                            selectedFragment = new WalkFragment();
+                            selectedFragment = new MainMenuFragment();
                             break;
                         case R.id.item_user:
                             selectedFragment = new UserFragment();

@@ -30,6 +30,9 @@ import java.util.Arrays;
 
 public class LiveActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
+    private static final String subKey1 = "assignment";
+    private static final String subKey2 = "recordData";
+
     private enum Connected {False, Pending, True}
 
     private String deviceAddress;
@@ -53,7 +56,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     private ArrayList<Assignment> mAssignment;
 
     // the correct step
-    StepChecker stepChecker = new StepChecker(new int[]{0, 250, 500, 1000, 2000, 4000});
+    private StepChecker stepChecker;
 
     BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
@@ -99,7 +102,13 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         if (inAssignment){
             loadPreferenceData();
         }
-
+        int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(this,subKey2,new TypeToken<int[]>(){}.getType());
+        if (stepCheckerData!=null){
+            stepChecker = new StepChecker(stepCheckerData);
+        }
+        else{
+            stepChecker = new StepChecker(new int[]{0, 250, 500, 1000, 2000, 4000});
+        }
         // bind service
         bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
 
