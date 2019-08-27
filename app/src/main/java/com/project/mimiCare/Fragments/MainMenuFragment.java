@@ -4,6 +4,10 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelUuid;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,9 +33,14 @@ import com.project.mimiCare.LiveActivity;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
 import com.project.mimiCare.RecordActivity;
+import com.project.mimiCare.Services.Constants;
 import com.project.mimiCare.Utils.changeHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class MainMenuFragment extends Fragment implements changeHandler {
@@ -59,6 +69,17 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     private Button golive_button;
     private Boolean inAnimation;
     private Boolean inScanning = false;
+
+    private List<ScanFilter> scanFilter = Collections.singletonList(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(Constants.FOOT_BLE_SERVICE)).build());
+    private ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            BLEstatus.setText("Device found");
+            Log.i(TAG, "Device found: " + result.toString());
+            myDevice = result.getDevice();
+            super.onScanResult(callbackType, result);
+        }
+    };
 
 
     @Override
@@ -122,7 +143,8 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             BLEstatus.setText("No device is found");
         }
         scan.setVisibility(View.VISIBLE);
-        bluetoothAdapter.cancelDiscovery();
+//        bluetoothAdapter.cancelDiscovery();
+        bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
         inScanning = false;
     }
 
@@ -140,19 +162,18 @@ public class MainMenuFragment extends Fragment implements changeHandler {
                 builder.show();
                 return;
             }
-            if (!bluetoothAdapter.isEnabled()){
+            if (!bluetoothAdapter.isEnabled()) {
                 Log.d(TAG, "startScan: check");
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(intent,0);
+                startActivityForResult(intent, 0);
                 return;
             }
         }
         Log.d(TAG, "startScan: done checking");
         BLEstatus.setText("Scanning");
-        bluetoothAdapter.startDiscovery();
+//        bluetoothAdapter.startDiscovery();
         inScanning = true;
-        //  BluetoothLeScanner.startScan(...) would return more details, but that's not needed here
-        //  why?
+        bluetoothAdapter.getBluetoothLeScanner().startScan(scanFilter, new ScanSettings.Builder().build(), scanCallback);
     }
 
     @Override
@@ -296,7 +317,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
                 return;
             }
             Intent intent = new Intent(getActivity(), LiveActivity.class);
-            intent.putExtra("device",myDevice);
+            intent.putExtra("device",myDevice.getAddress());
             startActivity(intent);
         });
         inAnimation = true;

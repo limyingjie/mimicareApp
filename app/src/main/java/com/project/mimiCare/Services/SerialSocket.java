@@ -20,7 +20,11 @@ import com.project.mimiCare.R;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.UUID;
+
+import static com.project.mimiCare.Services.Constants.BLUETOOTH_LE_CCCD;
+import static com.project.mimiCare.Services.Constants.FOOT_BLE_RW;
+import static com.project.mimiCare.Services.Constants.FOOT_BLE_R_NOTIFY;
+import static com.project.mimiCare.Services.Constants.FOOT_BLE_SERVICE;
 
 /**
  * wrap BLE communication into socket like class
@@ -29,10 +33,7 @@ import java.util.UUID;
  */
 public class SerialSocket extends BluetoothGattCallback {
 
-    private static final UUID BLUETOOTH_LE_CCCD           = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final UUID FOOT_BLE_SERVICE = UUID.fromString("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
-    private static final UUID FOOT_BLE_RW = UUID.fromString("beb5483e-36e1-4688-b7f5-ea07361b26a8");
-    private static final UUID FOOT_BLE_R_NOTIFY = UUID.fromString("beb5483e-36e1-4688-b7f5-ea07361b26a9");
+
 
     private static final String TAG = "SerialSocket";
 
