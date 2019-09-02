@@ -25,6 +25,7 @@ import com.project.mimiCare.Services.SerialSocket;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;
 import com.project.mimiCare.Utils.StepChecker;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -62,7 +63,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     Thread mockDataThread;
     MockDataRunnable mockDataRunnable;
-    boolean isMocking = true;
+    boolean isMocking = false;
 
     public LiveActivity() {
     }
@@ -265,7 +266,6 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             switch (result){
                 case "PERFECT":
                     grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
-                    perfect+=1;
                     Log.d(TAG, "updateProgress: p: " + perfect);
                     break;
                 case "GOOD":
@@ -302,6 +302,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
+            write(result);
             currentStep += 1;
             Log.d(TAG, "process_data: " + currentStep);
             updateProgress(result);
@@ -422,6 +423,20 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
                 sleep(500);
             }
             Log.i("MOCK", "Mock data thread is stopping");
+        }
+    }
+
+    private void write(String result) {
+        try{
+            if (result =="PERFECT") {
+                socket.write(new byte[] {0x0});
+            } else if (result == "GOOD") {
+                socket.write(new byte[] {0x1});
+            } else if (result == "POOR") {
+                socket.write(new byte[] {0x2});
+            }
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
         }
     }
 }

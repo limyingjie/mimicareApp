@@ -24,9 +24,9 @@ public class StepChecker {
         String result;
 
         // check the total difference
-        if (difference <= 6000) {
+        if (difference <= 8000) {
             result = "PERFECT";
-        } else if (difference <= 8000) {
+        } else if (difference <= 10000) {
             result = "GOOD";
         } else {
             result = "POOR";
