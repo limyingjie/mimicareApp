@@ -37,7 +37,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private String deviceAddress;
 
-    private TextView[] pressureTexts = new TextView[6];
+    private TextView[] pressureTexts = new TextView[8];
     private TextView grade;
     private TextView tv;
     private ProgressBar pb;
@@ -103,11 +103,13 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             loadPreferenceData();
         }
         int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(this,subKey2,new TypeToken<int[]>(){}.getType());
+        if (stepCheckerData.length != 8) stepCheckerData = null; //INVALID DATA
         if (stepCheckerData!=null){
+            Log.i(TAG, "Existing saved stepCheckerData");
             stepChecker = new StepChecker(stepCheckerData);
         }
         else{
-            stepChecker = new StepChecker(new int[]{0, 250, 500, 1000, 2000, 4000});
+            stepChecker = new StepChecker(new int[]{0, 200, 400, 600, 800, 1000, 1200, 1400});
         }
         // bind service
         bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -121,6 +123,8 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         pressureTexts[3] = findViewById(R.id.p3);
         pressureTexts[4] = findViewById(R.id.p4);
         pressureTexts[5] = findViewById(R.id.p5);
+        pressureTexts[6] = findViewById(R.id.p6);
+        pressureTexts[7] = findViewById(R.id.p7);
 
         // set the initial progress text and bar
         pb = findViewById(R.id.record_progressBar);

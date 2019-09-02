@@ -15,16 +15,17 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.project.mimiCare.Constants;
 import com.project.mimiCare.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.project.mimiCare.Services.Constants.BLUETOOTH_LE_CCCD;
-import static com.project.mimiCare.Services.Constants.FOOT_BLE_RW;
-import static com.project.mimiCare.Services.Constants.FOOT_BLE_R_NOTIFY;
-import static com.project.mimiCare.Services.Constants.FOOT_BLE_SERVICE;
+import static com.project.mimiCare.Constants.BLUETOOTH_LE_CCCD;
+import static com.project.mimiCare.Constants.FOOT_BLE_RW;
+import static com.project.mimiCare.Constants.FOOT_BLE_R_NOTIFY;
+import static com.project.mimiCare.Constants.FOOT_BLE_SERVICE;
 
 /**
  * wrap BLE communication into socket like class

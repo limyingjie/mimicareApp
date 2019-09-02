@@ -67,8 +67,8 @@
         android:layout_height="30dp"
         android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        android:layout_marginStart="250dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginStart="221dp"
+        android:layout_marginTop="279dp"
         android:background="@drawable/circle_red"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -76,6 +76,45 @@
 
     <TextView
         android:id="@+id/p1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignStart="@+id/feet"
+        android:layout_alignTop="@+id/feet"
+        android:layout_marginStart="273dp"
+        android:layout_marginTop="281dp"
+        android:background="@drawable/circle_red"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/p2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignStart="@+id/feet"
+        android:layout_alignTop="@+id/feet"
+        android:layout_marginStart="241dp"
+        android:layout_marginTop="181dp"
+        android:background="@drawable/circle_red"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/p3"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignStart="@+id/feet"
+        android:layout_alignTop="@+id/feet"
+        android:layout_marginStart="281dp"
+        android:layout_marginTop="202dp"
+        android:background="@drawable/circle_red"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/p4"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignStart="@+id/feet"
@@ -88,33 +127,7 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/p2"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignStart="@+id/feet"
-        android:layout_alignTop="@+id/feet"
-        android:layout_marginStart="210dp"
-        android:layout_marginTop="25dp"
-        android:background="@drawable/circle_red"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/p3"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignStart="@+id/feet"
-        android:layout_alignTop="@+id/feet"
-        android:layout_marginStart="280dp"
-        android:layout_marginTop="55dp"
-        android:background="@drawable/circle_red"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/p4"
+        android:id="@+id/p5"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignStart="@+id/feet"
@@ -127,13 +140,26 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/p5"
+        android:id="@+id/p6"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignStart="@+id/feet"
         android:layout_alignTop="@+id/feet"
-        android:layout_marginStart="275dp"
-        android:layout_marginTop="195dp"
+        android:layout_marginStart="210dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/circle_red"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/p7"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignStart="@+id/feet"
+        android:layout_alignTop="@+id/feet"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="55dp"
         android:background="@drawable/circle_red"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"

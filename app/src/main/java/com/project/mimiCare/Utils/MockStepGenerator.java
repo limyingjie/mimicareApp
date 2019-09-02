@@ -9,7 +9,7 @@ public class MockStepGenerator {
     private static final int MIN_RANDOM_PRESSURE = 0;
     private static final int MAX_RANDOM_PRESSURE = 4000;
 
-    private static final int NO_OF_SENSORS = 6;
+    private static final int NO_OF_SENSORS = 8;
 
     private Random random = new Random();
 

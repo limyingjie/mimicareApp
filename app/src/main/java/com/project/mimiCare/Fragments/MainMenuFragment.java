@@ -33,14 +33,11 @@ import com.project.mimiCare.LiveActivity;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
 import com.project.mimiCare.RecordActivity;
-import com.project.mimiCare.Services.Constants;
+import com.project.mimiCare.Constants;
 import com.project.mimiCare.Utils.changeHandler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class MainMenuFragment extends Fragment implements changeHandler {

@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import com.project.mimiCare.Constants;
 import com.project.mimiCare.R;
 
 import java.util.LinkedList;

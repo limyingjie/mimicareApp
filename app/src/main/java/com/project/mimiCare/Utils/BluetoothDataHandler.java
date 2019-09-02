@@ -46,9 +46,9 @@ public class BluetoothDataHandler {
 
     private int[] get_line_data(String line){
         String[] splitLine = line.split(",");
-        if (splitLine.length == 6){
-            int[] data = new int[6];
-            for (int i = 0; i < 6; i++) {
+        if (splitLine.length == 8){
+            int[] data = new int[8];
+            for (int i = 0; i < 8; i++) {
                 data[i] = Integer.parseInt(splitLine[i]);
             }
             return data;
