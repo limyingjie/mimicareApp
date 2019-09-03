@@ -104,8 +104,11 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             loadPreferenceData();
         }
         int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(this,subKey2,new TypeToken<int[]>(){}.getType());
-        if (stepCheckerData.length != 8) stepCheckerData = null; //INVALID DATA
-        if (stepCheckerData!=null){
+
+        if (stepCheckerData != null){
+            if (stepCheckerData.length != 8) stepCheckerData = null; //INVALID DATA
+        }
+        if (stepCheckerData != null){
             Log.i(TAG, "Existing saved stepCheckerData");
             stepChecker = new StepChecker(stepCheckerData);
         }
