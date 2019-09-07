@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/assignment_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp"
+    android:orientation="vertical"
+    android:background="@color/colorLightGrey"
     app:cardCornerRadius="5dp">
 
     <LinearLayout
@@ -21,8 +23,8 @@
             android:id="@+id/assigment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Assignment 1"
             android:layout_marginBottom="8dp"
+            android:text="Assignment 1"
             android:textColor="@color/colorText"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -31,15 +33,15 @@
             android:id="@+id/assignment_step"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0 out of 47 steps done."/>
-    <ProgressBar
-        android:id="@+id/assignment_progress"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="8dp"
-        android:progressDrawable="@drawable/custom_progressbar"
-        style="?android:attr/progressBarStyleHorizontal"
-        />
+            android:text="0 out of 47 steps done." />
+
+        <ProgressBar
+            android:id="@+id/assignment_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginBottom="8dp"
+            android:progressDrawable="@drawable/custom_progressbar" />
 
         <TextView
             android:id="@+id/assignment_score"
@@ -47,20 +49,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="Score: 50" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Due in " />
-            <TextView
-                android:id="@+id/assignment_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Monday"/>
-        </LinearLayout>
+        <TextView
+            android:id="@+id/assignment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Due in Monday" />
     </LinearLayout>
 </android.support.design.card.MaterialCardView>

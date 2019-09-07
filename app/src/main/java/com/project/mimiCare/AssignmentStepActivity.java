@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,7 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class LiveActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
+public class AssignmentStepActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
     private static final String subKey1 = "assignment";
     private static final String subKey2 = "recordData";
@@ -41,8 +40,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     private String deviceAddress;
 
     private ImageView[] pressureImageView = new ImageView[8];
-    private TextView grade;
-    private TextView tv, pr, g, p;
+    private TextView grade, assignment_tv;
+    private TextView tv,pr,g,p;
+    private ProgressBar progressBar;
 
     private SerialSocket socket;
     private SerialService service;
@@ -51,8 +51,8 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean inExercise = false;
     private boolean isDone = false;
-    private boolean inAssignment;
-    private int currentStep, targetStep, position, poor, good, perfect;
+    private int currentStep,targetStep,position,poor,good,perfect;
+    private String assignmentTitle;
     private boolean inLowState = false;
     private ArrayList<Assignment> mAssignment;
 
@@ -65,7 +65,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     MockDataRunnable mockDataRunnable;
     boolean isMocking = false;
 
-    public LiveActivity() {
+    public AssignmentStepActivity() {
     }
 
     /*
@@ -74,7 +74,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_live);
+        setContentView(R.layout.fragment_assignment_step);
         // default value
         deviceAddress = null;
         good = poor = perfect = 0;
@@ -82,40 +82,42 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         targetStep = 20;
 
         Intent intent = getIntent();
-        if (intent != null) {
+        if (intent!=null) {
             deviceAddress = intent.getStringExtra("device");
             Assignment assignment = intent.getParcelableExtra("assignment");
-            inAssignment = false;
-            if (assignment != null) {
-                inAssignment = true;
+            if (assignment!=null){
+                assignmentTitle = assignment.getName();
                 currentStep = assignment.getCurrent();
                 targetStep = assignment.getTarget();
                 perfect = assignment.getPerfect();
                 good = assignment.getGood();
                 poor = assignment.getPoor();
-                position = intent.getIntExtra("position", -1);
+                position = intent.getIntExtra("position",-1);
+            }
+            else{
+                // if there is no assignment chosen, close the activity
+                finish();
             }
             Log.d(TAG, "onCreate: " + deviceAddress);
             Log.d(TAG, "onCreate: " + assignment);
         }
 
-        if (deviceAddress == null) {
+        if (deviceAddress==null){
             isMocking = true;
         }
         // load Data
-        if (inAssignment) {
-            loadPreferenceData();
-        }
-        int[] stepCheckerData = (int[]) SharedPreferenceHelper.loadPreferenceData(this, subKey2, new TypeToken<int[]>() {
-        }.getType());
+        loadPreferenceData();
 
-        if (stepCheckerData != null) {
+        int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(this,subKey2,new TypeToken<int[]>(){}.getType());
+
+        if (stepCheckerData != null){
             if (stepCheckerData.length != 8) stepCheckerData = null; //INVALID DATA
         }
-        if (stepCheckerData != null) {
+        if (stepCheckerData != null){
             Log.i(TAG, "Existing saved stepCheckerData");
             stepChecker = new StepChecker(stepCheckerData);
-        } else {
+        }
+        else{
             stepChecker = new StepChecker(new int[]{50, 50, 50, 50, 50, 50, 50, 50});
         }
         // bind service
@@ -132,12 +134,20 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         pressureImageView[5] = findViewById(R.id.p5);
         pressureImageView[6] = findViewById(R.id.p6);
         pressureImageView[7] = findViewById(R.id.p7);
+
+        assignment_tv = findViewById(R.id.assignment_step_title);
+        progressBar = findViewById(R.id.record_progressBar);
         pr = findViewById(R.id.perfect_text);
         g = findViewById(R.id.good_text);
         p = findViewById(R.id.poor_text);
-        // set the initial progress text and bar
         tv = findViewById(R.id.progressText);
         grade = findViewById(R.id.grade);
+
+        // set the assignment title
+        assignment_tv.setText(assignmentTitle);
+        // set the initial progress text and bar
+        progressBar.setMax(targetStep);
+        progressBar.setProgress(currentStep);
         tv.setText(String.format("%d Steps", currentStep));
         pr.setText(Integer.toString(perfect));
         g.setText(Integer.toString(good));
@@ -152,8 +162,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         // unbind service
         try {
             unbindService(this);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         stopService(new Intent(this, SerialService.class));
 
         super.onDestroy();
@@ -183,10 +192,8 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         // stop the thread if it has started (they are exercising)
         stopExercise();
         // update and save the data if there is an intent from assignment
-        if (inAssignment) {
-            Log.d(TAG, "onPause: Save");
-            savePreferenceData();
-        }
+        Log.d(TAG, "onPause: Save");
+        savePreferenceData();
     }
 
     @Override
@@ -213,28 +220,23 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         service = null;
     }
 
-    private void loadPreferenceData() {
+    private void loadPreferenceData(){
         Log.d(TAG, "loadPreferenceData: Load");
-        mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this, "assignment",
-                new TypeToken<ArrayList<Assignment>>() {
-                }.getType());
+        mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this,"assignment",
+                new TypeToken<ArrayList<Assignment>>(){}.getType());
     }
 
-    private void savePreferenceData() {
-        if (isDone) {
-            mAssignment.remove(position);
-        } else {
-            Assignment assignment = mAssignment.get(position);
-            assignment.setCurrent(currentStep);
-            assignment.setGood(good);
-            assignment.setPerfect(perfect);
-            assignment.setPoor(poor);
-            mAssignment.set(position, assignment);
-        }
-        SharedPreferenceHelper.savePreferenceData(this, "assignment", mAssignment);
+    private void savePreferenceData(){
+        Assignment assignment = mAssignment.get(position);
+        assignment.setCurrent(currentStep);
+        assignment.setGood(good);
+        assignment.setPerfect(perfect);
+        assignment.setPoor(poor);
+        mAssignment.set(position,assignment);
+        Log.d(TAG, "savePreferenceData: "+mAssignment);
+        SharedPreferenceHelper.savePreferenceData(this,"assignment",mAssignment);
 
     }
-
     private void startExercise() {
         if (isMocking) {
             mockDataRunnable = new MockDataRunnable();
@@ -246,7 +248,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         inExercise = true;
     }
 
-    private void stopExercise() {
+    private void stopExercise(){
         if (isMocking) mockDataRunnable.isActive = false;
         inExercise = false;
     }
@@ -255,22 +257,23 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         // this is not in UI thread so need to use the runOnUIThread method
         runOnUiThread(() -> {
             grade.setText(result);
-            switch (result) {
+            switch (result){
                 case "PERFECT":
                     grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
-                    perfect += 1;
+                    perfect+=1;
                     Log.d(TAG, "updateProgress: p: " + perfect);
                     break;
                 case "GOOD":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondary));
-                    good += 1;
+                    good+=1;
                     Log.d(TAG, "updateProgress: g: " + good);
                     break;
                 case "POOR":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondaryVariant));
-                    poor += 1;
+                    poor+=1;
                     Log.d(TAG, "updateProgress: pr: " + poor);
             }
+            progressBar.setProgress(currentStep);
             tv.setText(String.format("%d Steps", currentStep));
             pr.setText(Integer.toString(perfect));
             g.setText(Integer.toString(good));
@@ -289,28 +292,43 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (!isMocking) {
+            if (!isMocking){
                 write(result);
             }
             currentStep += 1;
             Log.d(TAG, "process_data: " + currentStep);
             updateProgress(result);
         }
-        runOnUiThread(() -> {
-            updatePressureImageView(pressureData, nowInLowState);
+        runOnUiThread(()->{
+            updatePressureImageView(pressureData,nowInLowState);
         });
+        // when it is done
+        if (currentStep>=progressBar.getMax()){
+            isDone = true;
+            // save the data
+            savePreferenceData();
+            // change the UI
+            tv.setText("Done!");
+            // stop threading
+            stopExercise();
+            // call the summary page
+            runOnUiThread(()->{
+                Intent intent = new Intent(this,AssignmentSummaryActivity.class);
+                intent.putExtra("assignment",mAssignment.get(position));
+                startActivity(intent);
+            });
+        }
     }
 
-    private boolean isAllZero(int[] pressure) {
-        for (int i = 0; i < pressure.length; i++) {
+    private boolean isAllZero(int[] pressure){
+        for (int i = 0; i < pressure.length; i++){
             // once it is non-zero, not all is zero
-            if (pressure[i] > 0) {
+            if (pressure[i]>0){
                 return false;
             }
         }
         return true;
     }
-
     /*
      * Serial + UI
      */
@@ -334,7 +352,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         Log.d("L SC", "disconnect");
         connected = Connected.False;
         service.disconnect();
-        if (socket != null) {
+        if (socket!=null){
             socket.disconnect();
         }
         socket = null;
@@ -349,9 +367,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
         ArrayList<String> color_result = PressureColor.get_color(pressureData);
-        for (int i = 0; i < color_result.size(); i++) {
+        for (int i=0; i < color_result.size(); i++){
             String color = color_result.get(i);
-            switch (color) {
+            switch (color){
                 case "g":
                     pressureImageView[i].setImageResource(R.drawable.circle_grey);
                     break;
@@ -386,7 +404,6 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
          }
          }***/
     }
-
     /*
      * SerialListener
      */
@@ -440,13 +457,13 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void write(String result) {
-        try {
-            if (result == "PERFECT") {
-                socket.write(new byte[]{0x0});
+        try{
+            if (result =="PERFECT") {
+                socket.write(new byte[] {0x0});
             } else if (result == "GOOD") {
-                socket.write(new byte[]{0x1});
+                socket.write(new byte[] {0x1});
             } else if (result == "POOR") {
-                socket.write(new byte[]{0x2});
+                socket.write(new byte[] {0x2});
             }
         } catch (IOException e) {
             Log.e(TAG, e.toString());

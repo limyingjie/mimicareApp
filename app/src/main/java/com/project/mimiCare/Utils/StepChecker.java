@@ -3,7 +3,8 @@ package com.project.mimiCare.Utils;
 import android.util.Log;
 
 public class StepChecker {
-
+    private int PERFECT_THRESHOLD = 30*8;
+    private int GOOD_THRESHOLD = 50*8;
     private int[] correctStepPressure;
 
     public StepChecker(int[] correctStepPressure) {
@@ -24,9 +25,9 @@ public class StepChecker {
         String result;
 
         // check the total difference
-        if (difference <= 8000) {
+        if (difference <= PERFECT_THRESHOLD) {
             result = "PERFECT";
-        } else if (difference <= 10000) {
+        } else if (difference <= GOOD_THRESHOLD) {
             result = "GOOD";
         } else {
             result = "POOR";

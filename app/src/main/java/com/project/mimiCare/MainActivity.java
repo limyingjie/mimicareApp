@@ -12,12 +12,16 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.project.mimiCare.Data.Assignment;
 import com.project.mimiCare.Fragments.AssignmentFragment;
-import com.project.mimiCare.Fragments.DevicesFragment;
+import com.project.mimiCare.Fragments.LiveFragment;
 import com.project.mimiCare.Fragments.MainMenuFragment;
 import com.project.mimiCare.Fragments.UserFragment;
-import com.project.mimiCare.Fragments.WalkFragment;
+import com.project.mimiCare.Utils.SharedPreferenceHelper;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
     private static final String TAG = "MainActivity";
@@ -69,17 +73,33 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         onBackPressed();
         return true;
     }
+    @Override
+    public void onBackPressed() {
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+
+        Fragment f = this.getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if(f instanceof MainMenuFragment)
+            // do something with f
+            super.onBackPressed();
+        else{
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new MainMenuFragment()).commit();
+            bottomNav.setSelectedItemId(R.id.item_walk);
+        }
+
+    }
+    public BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener(){
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     Fragment selectedFragment = null;
                     switch (menuItem.getItemId()){
-                        case R.id.item_walk:
+                        case R.id.item_home:
                             selectedFragment = new MainMenuFragment();
                             break;
-                        case R.id.item_user:
+                        case R.id.item_walk:
+                            selectedFragment = new LiveFragment();
+                            break;
+                        case R.id.item_data:
                             selectedFragment = new UserFragment();
                             break;
                         case R.id.item_goal:
@@ -115,4 +135,5 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         bottomNav.enableShiftingMode(false);
         bottomNav.setTextVisibility(true);
     }
+
 }

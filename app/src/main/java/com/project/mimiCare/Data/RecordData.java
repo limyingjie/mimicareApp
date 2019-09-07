@@ -13,7 +13,7 @@ public class RecordData {
     }
 
     public void add(int[] pressure){
-        if (pressure.length!=6){
+        if (pressure.length!=8){
             return;
         }
         pressures.add(pressure);
@@ -21,9 +21,9 @@ public class RecordData {
 
     public int[] getAverage(){
         if (pressures.isEmpty()){
-            return new int[] {0,0,0,0,0,0};
+            return new int[] {0,0,0,0,0,0,0,0};
         }
-        int[] total = {0,0,0,0,0,0};
+        int[] total = {0,0,0,0,0,0,0,0};
 
         // adding
         for (int i = 0; i < pressures.size(); i++){
@@ -34,7 +34,7 @@ public class RecordData {
         }
         Log.d(TAG, "getAverage: " + total);
 
-        int[] average = {0,0,0,0,0,0};
+        int[] average = {0,0,0,0,0,0,0,0};
         // dividing
         for (int i = 0; i < total.length; i++){
             average[i] = total[i]/pressures.size();

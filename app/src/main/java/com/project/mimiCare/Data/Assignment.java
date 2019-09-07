@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 
 public class Assignment implements Parcelable {
@@ -16,6 +17,8 @@ public class Assignment implements Parcelable {
     private int poor;
     private int good;
     private int perfect;
+    private boolean isDone;
+    private boolean isLate;
 
     // may consider use https://github.com/JakeWharton/ThreeTenABP instead of calendar
     public Assignment(String name, int target, int current, Calendar date) {
@@ -27,6 +30,8 @@ public class Assignment implements Parcelable {
         // when it is randomly initialize
         this.good = current;
         this.perfect = 0;
+        this.isDone = false;
+        this.isLate = false;
     }
 
     protected Assignment(Parcel in) {
@@ -64,6 +69,7 @@ public class Assignment implements Parcelable {
         parcel.writeInt(good);
         parcel.writeInt(poor);
     }
+
     public String getName() {
         return name;
     }
@@ -86,6 +92,9 @@ public class Assignment implements Parcelable {
 
     public void setCurrent(int current) {
         this.current = current;
+        if (current >= target){
+            isDone = true;
+        }
     }
 
     public Calendar getDate() {
@@ -120,24 +129,25 @@ public class Assignment implements Parcelable {
         this.perfect = perfect;
     }
 
-    public int getScore(){
-        if (this.current==0){
+    public int getScore() {
+        if (this.current == 0) {
             return 0;
         }
-        return (this.perfect*100+this.good*50)/this.current;
+        return (this.perfect * 100 + this.good * 50) / this.current;
     }
 
-    public String getRemainingTime(){
+    public String getRemainingTime() {
         Calendar calendar = Calendar.getInstance();
-        if (this.date.after(calendar)){
+        Log.d(TAG, "getRemainingTime: date: "+ DateFormat.getDateInstance().format(date.getTime()));
+        Log.d(TAG, "getRemainingTime: current: "+ DateFormat.getDateInstance().format(calendar.getTime()));
+        if (this.date.after(calendar)) {
             long timeDiff = this.date.getTimeInMillis() - calendar.getTimeInMillis();
             int daysLeft = (int) (timeDiff / DateUtils.DAY_IN_MILLIS);
-            if (daysLeft<1){
-                int hour = (int) (timeDiff/DateUtils.HOUR_IN_MILLIS);
-                if (hour == 0){
+            if (daysLeft < 1) {
+                int hour = (int) (timeDiff / DateUtils.HOUR_IN_MILLIS);
+                if (hour == 0) {
                     return "<1 hours";
-                }
-                else{
+                } else {
                     return hour + " hours";
                 }
             }
@@ -145,7 +155,19 @@ public class Assignment implements Parcelable {
             return daysLeft + " days";
         }
         // it means it is in the past
+        isLate = true;
         return "the past";
     }
 
+    public boolean isDone() {
+        return this.isDone;
+    }
+
+    public Assignment clone(){
+        return new Assignment(name,target,current,date);
+    }
+
+    public boolean isLate(){
+        return this.isLate;
+    }
 }

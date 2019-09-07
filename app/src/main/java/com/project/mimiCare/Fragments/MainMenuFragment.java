@@ -29,11 +29,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.project.mimiCare.LiveActivity;
+import com.google.gson.reflect.TypeToken;
+import com.project.mimiCare.AssignmentSummaryActivity;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
 import com.project.mimiCare.RecordActivity;
 import com.project.mimiCare.Constants;
+import com.project.mimiCare.Utils.SharedPreferenceHelper;
 import com.project.mimiCare.Utils.changeHandler;
 
 import java.util.Collections;
@@ -63,7 +65,6 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     private TextView BLEstatus;
     private Button scan;
     private Button record_button;
-    private Button golive_button;
     private Boolean inAnimation;
     private Boolean inScanning = false;
 
@@ -254,13 +255,21 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         else
             Log.d(TAG, "onResume: <use SCAN to refresh devices>");
         super.onResume();
+
+        // hide actionbar
         ((MainActivity)getActivity()).getSupportActionBar().hide();
+
+        // check if the user has calibrated or not
+        checkCalibration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         ((MainActivity)getActivity()).getSupportActionBar().show();
+
+        // check if the user has calibrated or not
+        checkCalibration();
     }
     @Override
     public void onPause() {
@@ -296,8 +305,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         View view = inflater.inflate(R.layout.fragment_mainmenu, container, false);
         speechBubbleLeft = view.findViewById(R.id.speechleft);
         speechBubbleRight = view.findViewById(R.id.speechright);
-        record_button = view.findViewById(R.id.record_button);
-        golive_button = view.findViewById(R.id.golive);
+        record_button = view.findViewById(R.id.calibrate_button);
         BLEstatus = view.findViewById(R.id.BLEstatus_text);
         scan = view.findViewById(R.id.BLEscan_button);
         scan.setVisibility(View.GONE);
@@ -308,18 +316,33 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             scan.setVisibility(View.GONE);
         });
         record_button.setOnClickListener((View v)-> startActivity(new Intent(getActivity(), RecordActivity.class)));
-        golive_button.setOnClickListener((View v)-> {
-            if (myDevice==null){
-                Toast.makeText(getActivity(),"No device is found",Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Intent intent = new Intent(getActivity(), LiveActivity.class);
+
+        // send data to live fragment
+        Intent intent = new Intent(getActivity(), AssignmentSummaryActivity.class);
+        if (myDevice==null){
+            Toast.makeText(getActivity(),"No device is found",Toast.LENGTH_SHORT).show();
+        }
+        else{
             intent.putExtra("device",myDevice.getAddress());
-            startActivity(intent);
-        });
+        }
+
         inAnimation = true;
         onStartHandler();
         return view;
     }
 
+    private void checkCalibration(){
+        // load data of the calibration
+        int[] recordData = (int[]) SharedPreferenceHelper.loadPreferenceData(getActivity(),
+                SharedPreferenceHelper.recordData,
+                new TypeToken<int[]>() {}.getType());
+        if (recordData==null){
+            Log.d(TAG, "checkCalibration: " + "null");
+            ((MainActivity)getActivity()).bottomNav.setVisibility(View.GONE);
+        }
+        else{
+            Log.d(TAG, "checkCalibration: " + recordData.toString());
+            ((MainActivity)getActivity()).bottomNav.setVisibility(View.VISIBLE);
+        }
+    }
 }

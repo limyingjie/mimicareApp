@@ -21,12 +21,14 @@
         <activity
             android:name="com.project.mimiCare.MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"
             >
 
         </activity>
         <activity android:name="com.project.mimiCare.LoginActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,9 +36,17 @@
             </intent-filter>
         </activity>
         <activity android:name="com.project.mimiCare.RegisterActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan"/>
-        <activity android:name="com.project.mimiCare.LiveActivity" />
-        <activity android:name="com.project.mimiCare.RecordActivity" />
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.project.mimiCare.LiveActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.project.mimiCare.RecordActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AssignmentStepActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AssignmentSummaryActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <service android:name="com.project.mimiCare.Services.SerialService" />
     </application>

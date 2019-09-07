@@ -25,10 +25,12 @@ import android.view.ViewGroup;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.project.mimiCare.Adapters.AssignmentRecyclerAdapter;
+import com.project.mimiCare.AssignmentStepActivity;
 import com.project.mimiCare.Data.Assignment;
 import com.project.mimiCare.LiveActivity;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
+import com.project.mimiCare.Utils.SharedPreferenceHelper;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -75,12 +77,28 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         }
         else{
             Log.d(TAG, "onCreateView: Called");
+            // clone the list
+            ArrayList<Assignment> temporary_list = new ArrayList<>();
+            for (Assignment data:mAssignments){
+                temporary_list.add(data.clone());
+            }
             // check if there are expired assignment and remove it
-            for (int pos = 0; pos < mAssignments.size();pos++){
-                if (mAssignments.get(pos).getDate().compareTo(Calendar.getInstance())<0){
+            // check if there are finished assignment and then move it to the last position
+
+            for (int pos = 0; pos < temporary_list.size();pos++){
+                Assignment item = temporary_list.get(pos);
+                if (item.isDone()){
                     mAssignments.remove(pos);
+                    mAssignments.add(item);
+                }
+                else{
+                    if (item.getDate().compareTo(Calendar.getInstance())<0){
+                        mAssignments.remove(pos);
+                        mAssignments.add(item);
+                    }
                 }
             }
+            saveSharedPreferenceData();
         }
         // set that the Data has just been loaded and does not need refreshed
         needRefresh = false;
@@ -161,10 +179,13 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     public void onClickListener(int position) {
         Log.d(TAG, "onClickListener: Called");
         Log.d(TAG, "onClickListener: " + mAssignments.get(position).getRemainingTime());
-        Intent intent = new Intent(getActivity(), LiveActivity.class);
-        intent.putExtra("assignment",mAssignments.get(position));
-        intent.putExtra("position",position);
-        startActivity(intent);
+        Assignment item = mAssignments.get(position);
+        if (!item.isDone()&&!item.isLate()){
+            Intent intent = new Intent(getActivity(), AssignmentStepActivity.class);
+            intent.putExtra("assignment",item);
+            intent.putExtra("position",position);
+            startActivity(intent);
+        }
     }
 
     private void initializeText(){
@@ -195,9 +216,9 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         return calendar;
     }
     private void insert(Assignment input){
-        mAssignments.add(input);
+        mAssignments.add(0,input);
         isChanged = true;
-        mAssignmentRecyclerAdapter.notifyItemInserted(mAssignments.size()-1);
+        initRecyclerView(v);
     }
 
     private void remove(int position){
@@ -247,23 +268,17 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
     @Override
     public void sendInput(String title, int target, Calendar day) {
         insert(new Assignment(title,target,0,day));
+
     }
 
     private void saveSharedPreferenceData(){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("mimiCare", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(mAssignments);
-        editor.putString("assignment",json);
-        editor.apply();
+        SharedPreferenceHelper.savePreferenceData(getActivity(),
+                SharedPreferenceHelper.assignment,mAssignments);
     }
 
     private ArrayList<Assignment> loadSharedPreferenceData(){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("mimiCare", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("assignment",null);
-        Type type = new TypeToken<ArrayList<Assignment>>() {}.getType();
-        mAssignments = gson.fromJson(json,type);
-        return mAssignments;
+        return (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(getActivity(),
+                SharedPreferenceHelper.assignment,
+                new TypeToken<ArrayList<Assignment>>() {}.getType());
     }
 }

@@ -1,19 +1,28 @@
 package com.project.mimiCare;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.project.mimiCare.Data.RecordData;
 import com.project.mimiCare.Utils.MockStepGenerator;
+import com.project.mimiCare.Utils.PressureColor;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RecordActivity extends AppCompatActivity {
@@ -26,11 +35,12 @@ public class RecordActivity extends AppCompatActivity {
     private MockDataRunnable mockDataRunnable;
     private Boolean isDone;
 
-
     private ProgressBar progressBar;
-    private Button record_button;
     private TextView record_step_text;
     private TextView record_data_text;
+    private ImageView[] pressureImageView = new ImageView[8];
+    private Thread mockDataThread;
+    private Boolean isMocking = true;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,13 +58,28 @@ public class RecordActivity extends AppCompatActivity {
         /*
         UI
          */
-        record_button = findViewById(R.id.record_start_stop_Button);
         progressBar = findViewById(R.id.record_progressBar);
         record_step_text = findViewById(R.id.record_step);
-        record_data_text = findViewById(R.id.record_data);
+        //record_data_text = findViewById(R.id.record_data);
 
-        record_button.setOnClickListener((View v)->onClick());
+        pressureImageView[0] = findViewById(R.id.p0);
+        pressureImageView[1] = findViewById(R.id.p1);
+        pressureImageView[2] = findViewById(R.id.p2);
+        pressureImageView[3] = findViewById(R.id.p3);
+        pressureImageView[4] = findViewById(R.id.p4);
+        pressureImageView[5] = findViewById(R.id.p5);
+        pressureImageView[6] = findViewById(R.id.p6);
+        pressureImageView[7] = findViewById(R.id.p7);
+
         Log.d(TAG, "onCreate: Called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isDone && !inRecord){
+            startRecord();
+        }
     }
 
     @Override
@@ -163,21 +188,21 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void stopRecord(){
-        mockDataRunnable.isActive = false;
-
-        runOnUiThread(()->record_button.setText(R.string.start_recording));
+        if (isMocking){
+            mockDataRunnable.isActive = false;
+        }
         inRecord = false;
     }
 
     private void startRecord(){
-        // start runnable
-        mockDataRunnable = new MockDataRunnable();
+        if (isMocking){
+            // start runnable
+            mockDataRunnable = new MockDataRunnable();
 
-        //create new Thread
-        Thread mockDataThread = new Thread(mockDataRunnable);
-        mockDataThread.start();
-
-        record_button.setText(R.string.stop_recording);
+            //create new Thread
+            mockDataThread = new Thread(mockDataRunnable);
+            mockDataThread.start();
+        }
         inRecord = true;
     }
 
@@ -221,17 +246,15 @@ public class RecordActivity extends AppCompatActivity {
 
             // update UI
             runOnUiThread(()->{
-                record_step_text.setText(String.format("%d Steps.",currentStep));
-                record_data_text.setText("Data: " + Arrays.toString(record));
-                progressBar.setProgress(currentStep);
-
+                updateUI(currentStep,record);
             });
             // when it is done
             if (currentStep >= progressBar.getMax()){
                 int[] average = recordData.getAverage();
                 runOnUiThread(()->{
                     record_step_text.setText("Done!");
-                    record_data_text.setText("Average: " + Arrays.toString(average));
+                    Log.d(TAG, "Average: " + Arrays.toString(average));
+                    //record_data_text.setText("Average: " + Arrays.toString(average));
                 });
                 // save Average Data
                 SharedPreferenceHelper.savePreferenceData(this, subKey,average);
@@ -239,8 +262,60 @@ public class RecordActivity extends AppCompatActivity {
                 // stop the thread
                 stopRecord();
                 isDone = true;
+
+                runOnUiThread(()->{
+                    alertSuccess();
+                    final Handler handler = new Handler();
+                    // close after 3 seconds
+                    handler.postDelayed(()->{finish();}, 3000);
+                });
+
+
             }
         }
+    }
+
+    private void updateUI(int currentStep, int[] record){
+        record_step_text.setText(String.format("%d",currentStep));
+        //record_data_text.setText("Data: " + Arrays.toString(record));
+        Log.d(TAG, "Data recorded: " + Arrays.toString(record));
+        progressBar.setProgress(currentStep);
+
+        ArrayList<String> color_result = PressureColor.get_color(record);
+        for (int i=0; i < color_result.size(); i++){
+            String color = color_result.get(i);
+            switch (color){
+                case "g":
+                    pressureImageView[i].setImageResource(R.drawable.circle_grey);
+                    break;
+                case "lb":
+                    pressureImageView[i].setImageResource(R.drawable.circle_lightblue);
+                    break;
+                case "b":
+                    pressureImageView[i].setImageResource(R.drawable.circle_blue);
+                    break;
+                case "db":
+                    pressureImageView[i].setImageResource(R.drawable.circle_darkblue);
+                    break;
+            }
+        }
+    }
+
+    private void alertSuccess(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.snippet_record_success,null);
+        Button done = mView.findViewById(R.id.record_success_done);
+
+        done.setOnClickListener((View v)->{
+            finish();
+        });
+
+        alertDialog.setView(mView);
+        Dialog alert = alertDialog.create();
+        // transparent parent layout
+        alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alert.setCanceledOnTouchOutside(false);
+        alert.show();
     }
     private boolean isAllZero(int[] pressure){
         for (int i = 0; i < pressure.length; i++){

@@ -7,7 +7,7 @@ public class MockStepGenerator {
     private boolean onGround = true;
 
     private static final int MIN_RANDOM_PRESSURE = 0;
-    private static final int MAX_RANDOM_PRESSURE = 4000;
+    private static final int MAX_RANDOM_PRESSURE = 99;
 
     private static final int NO_OF_SENSORS = 8;
 

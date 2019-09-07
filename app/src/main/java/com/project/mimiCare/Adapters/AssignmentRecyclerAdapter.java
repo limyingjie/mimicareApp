@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,7 +47,17 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
         viewHolder.assignment_title.setText(assignment_data.getName());
         viewHolder.assignment_progress.setMax(assignment_data.getTarget());
         viewHolder.assignment_progress.setProgress(assignment_data.getCurrent());
-        viewHolder.assignment_date.setText(assignment_data.getRemainingTime());
+        if (assignment_data.isDone()){
+            viewHolder.assignment_date.setText("Done");
+            viewHolder.cardView.setBackgroundColor(context.getResources().getColor(R.color.colorLightGrey));
+        }
+        else{
+            viewHolder.assignment_date.setText(String.format(context.getResources().getString(R.string.date),
+                    assignment_data.getRemainingTime()));
+            if (assignment_data.isLate()){
+                viewHolder.cardView.setBackgroundColor(context.getResources().getColor(R.color.colorLightGrey));
+            }
+        }
         viewHolder.assignment_score.setText(String.format("Score: %d",assignment_data.getScore()));
         String step = context.getString(R.string.step);
         step = String.format(step,assignment_data.getCurrent(),assignment_data.getTarget());
@@ -63,6 +74,7 @@ public class AssignmentRecyclerAdapter extends RecyclerView.Adapter<AssignmentRe
         TextView assignment_title, assignment_date, assignment_step, assignment_score;
         ProgressBar assignment_progress;
         Context context;
+        LinearLayout layout;
         public ViewHolder(@NonNull View itemView, OnClickListener onClickListener, Context context) {
             super(itemView);
             Log.d(TAG, "ViewHolder: Called");

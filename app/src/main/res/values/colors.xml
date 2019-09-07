@@ -9,9 +9,12 @@
     <color name="colorAlternate">#abd815</color>
     <color name="colorAlternateVariant">#15d843</color>
 
+    <!--Terminal color -->
     <color name="colorRecieveText">#00FF00</color>
     <color name="colorSendText">#82CAFF</color>
     <color name="colorStatusText">#3D5AFE</color>
+
+
     <color name="colorMainBackground">#FFFFFF</color>
     <color name="colorText">#000000</color>
     <color name="colorBlack">#000000</color>
@@ -21,4 +24,12 @@
     <color name="colorFadeTextTitle">#DDFFFFFF</color>
     <color name="colorSecondaryTextTitle">#C5C5C5</color>
     <color name="colorLightGrey">#DFDFDF</color>
+    <color name="colorGreen">#00c853</color>
+    <color name="colorDarkGreen">#009624</color>
+    <color name="colorTransparentWhite">#B3FFFFFF</color>
+    <!-- pressure colot -->
+    <color name="grey">#a4a4a4</color>
+    <color name="lightBlue">#b3e5fc</color>
+    <color name="blue">#2196f3</color>
+    <color name="darkBlue">#1a237e</color>
 </resources>

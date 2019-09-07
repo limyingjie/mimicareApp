@@ -1,4 +1,4 @@
-package com.project.mimiCare;
+package com.project.mimiCare.Fragments;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,21 +8,26 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
-import com.project.mimiCare.Data.Assignment;
-import com.project.mimiCare.Utils.BluetoothDataHandler;
-import com.project.mimiCare.Utils.MockStepGenerator;
+import com.project.mimiCare.MainActivity;
+import com.project.mimiCare.R;
 import com.project.mimiCare.Services.SerialListener;
 import com.project.mimiCare.Services.SerialService;
 import com.project.mimiCare.Services.SerialSocket;
+import com.project.mimiCare.Utils.BluetoothDataHandler;
+import com.project.mimiCare.Utils.MockStepGenerator;
 import com.project.mimiCare.Utils.PressureColor;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;
 import com.project.mimiCare.Utils.StepChecker;
@@ -31,9 +36,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class LiveActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
+public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
-    private static final String subKey1 = "assignment";
     private static final String subKey2 = "recordData";
 
     private enum Connected {False, Pending, True}
@@ -42,7 +46,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private ImageView[] pressureImageView = new ImageView[8];
     private TextView grade;
-    private TextView tv, pr, g, p;
+    private TextView tv,pr,g,p;
 
     private SerialSocket socket;
     private SerialService service;
@@ -50,11 +54,8 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     private Connected connected = Connected.False;
 
     private boolean inExercise = false;
-    private boolean isDone = false;
-    private boolean inAssignment;
-    private int currentStep, targetStep, position, poor, good, perfect;
+    private int currentStep,position,poor,good,perfect;
     private boolean inLowState = false;
-    private ArrayList<Assignment> mAssignment;
 
     // the correct step
     private StepChecker stepChecker;
@@ -65,7 +66,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     MockDataRunnable mockDataRunnable;
     boolean isMocking = false;
 
-    public LiveActivity() {
+    public LiveFragment() {
     }
 
     /*
@@ -74,75 +75,69 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_live);
         // default value
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_live,container,false);
         deviceAddress = null;
         good = poor = perfect = 0;
         currentStep = 0;
-        targetStep = 20;
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            deviceAddress = intent.getStringExtra("device");
-            Assignment assignment = intent.getParcelableExtra("assignment");
-            inAssignment = false;
-            if (assignment != null) {
-                inAssignment = true;
-                currentStep = assignment.getCurrent();
-                targetStep = assignment.getTarget();
-                perfect = assignment.getPerfect();
-                good = assignment.getGood();
-                poor = assignment.getPoor();
-                position = intent.getIntExtra("position", -1);
-            }
-            Log.d(TAG, "onCreate: " + deviceAddress);
-            Log.d(TAG, "onCreate: " + assignment);
+        // change to fragment argument
+        try {
+            deviceAddress = getArguments().getString("device",null);
+        }
+        catch (Exception e){
+            deviceAddress = null;
         }
 
-        if (deviceAddress == null) {
+        if (deviceAddress==null){
             isMocking = true;
         }
-        // load Data
-        if (inAssignment) {
-            loadPreferenceData();
-        }
-        int[] stepCheckerData = (int[]) SharedPreferenceHelper.loadPreferenceData(this, subKey2, new TypeToken<int[]>() {
-        }.getType());
+        int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(getActivity(),subKey2,new TypeToken<int[]>(){}.getType());
 
-        if (stepCheckerData != null) {
+        if (stepCheckerData != null){
             if (stepCheckerData.length != 8) stepCheckerData = null; //INVALID DATA
         }
-        if (stepCheckerData != null) {
+        if (stepCheckerData != null){
             Log.i(TAG, "Existing saved stepCheckerData");
             stepChecker = new StepChecker(stepCheckerData);
-        } else {
+        }
+        else{
             stepChecker = new StepChecker(new int[]{50, 50, 50, 50, 50, 50, 50, 50});
         }
         // bind service
-        bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
+        getActivity().bindService(new Intent(getActivity(), SerialService.class), this, Context.BIND_AUTO_CREATE);
 
         /*
          * UI
          */
-        pressureImageView[0] = findViewById(R.id.p0);
-        pressureImageView[1] = findViewById(R.id.p1);
-        pressureImageView[2] = findViewById(R.id.p2);
-        pressureImageView[3] = findViewById(R.id.p3);
-        pressureImageView[4] = findViewById(R.id.p4);
-        pressureImageView[5] = findViewById(R.id.p5);
-        pressureImageView[6] = findViewById(R.id.p6);
-        pressureImageView[7] = findViewById(R.id.p7);
-        pr = findViewById(R.id.perfect_text);
-        g = findViewById(R.id.good_text);
-        p = findViewById(R.id.poor_text);
+        pressureImageView[0] = view.findViewById(R.id.p0);
+        pressureImageView[1] = view.findViewById(R.id.p1);
+        pressureImageView[2] = view.findViewById(R.id.p2);
+        pressureImageView[3] = view.findViewById(R.id.p3);
+        pressureImageView[4] = view.findViewById(R.id.p4);
+        pressureImageView[5] = view.findViewById(R.id.p5);
+        pressureImageView[6] = view.findViewById(R.id.p6);
+        pressureImageView[7] = view.findViewById(R.id.p7);
+
         // set the initial progress text and bar
-        tv = findViewById(R.id.progressText);
-        grade = findViewById(R.id.grade);
+        pr = view.findViewById(R.id.perfect_text);
+        g = view.findViewById(R.id.good_text);
+        p = view.findViewById(R.id.poor_text);
+        // set the initial progress text and bar
+        tv = view.findViewById(R.id.progressText);
+        grade = view.findViewById(R.id.grade);
         tv.setText(String.format("%d Steps", currentStep));
         pr.setText(Integer.toString(perfect));
         g.setText(Integer.toString(good));
         p.setText(Integer.toString(poor));
-    }
+        return view;
+}
 
     @Override
     public void onDestroy() {
@@ -151,10 +146,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             disconnect();
         // unbind service
         try {
-            unbindService(this);
-        } catch (Exception ignored) {
-        }
-        stopService(new Intent(this, SerialService.class));
+            getActivity().unbindService(this);
+        } catch (Exception ignored) {}
+        getActivity().stopService(new Intent(getActivity(), SerialService.class));
 
         super.onDestroy();
     }
@@ -165,38 +159,38 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         if (service != null)
             service.attach(this);
         else
-            startService(new Intent(this, SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
+            getActivity().startService(new Intent(getActivity(), SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
     }
 
-    @Override
-    public void onStop() {
-        if (service != null && !this.isChangingConfigurations())
-            service.detach();
-        // stop the thread if it has started (they are exercising)
-        if (inExercise) mockDataRunnable.isActive = false;
-        super.onStop();
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // stop the thread if it has started (they are exercising)
-        stopExercise();
-        // update and save the data if there is an intent from assignment
-        if (inAssignment) {
-            Log.d(TAG, "onPause: Save");
-            savePreferenceData();
-        }
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         if (initialStart && service != null) {
             initialStart = false;
-            runOnUiThread(this::connect);
+            getActivity().runOnUiThread(this::connect);
         }
         startExercise();
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
+    }
+
+    @Override
+    public void onStop() {
+        if (service != null && !getActivity().isChangingConfigurations())
+            service.detach();
+        // stop the thread if it has started (they are exercising)
+        if (inExercise) mockDataRunnable.isActive = false;
+        ((MainActivity)getActivity()).getSupportActionBar().show();
+        super.onStop();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // stop the thread if it has started (they are exercising)
+        stopExercise();
+        // update and save the data if there is an intent from assignment
     }
 
     @Override
@@ -204,35 +198,13 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         service = ((SerialService.SerialBinder) binder).getService();
         if (initialStart) {
             initialStart = false;
-            runOnUiThread(this::connect);
+            getActivity().runOnUiThread(this::connect);
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
         service = null;
-    }
-
-    private void loadPreferenceData() {
-        Log.d(TAG, "loadPreferenceData: Load");
-        mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this, "assignment",
-                new TypeToken<ArrayList<Assignment>>() {
-                }.getType());
-    }
-
-    private void savePreferenceData() {
-        if (isDone) {
-            mAssignment.remove(position);
-        } else {
-            Assignment assignment = mAssignment.get(position);
-            assignment.setCurrent(currentStep);
-            assignment.setGood(good);
-            assignment.setPerfect(perfect);
-            assignment.setPoor(poor);
-            mAssignment.set(position, assignment);
-        }
-        SharedPreferenceHelper.savePreferenceData(this, "assignment", mAssignment);
-
     }
 
     private void startExercise() {
@@ -243,32 +215,32 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             Log.d("MOCK", "Thread Id: " + mockDataThread.currentThread().getId());
             mockDataThread.start();
         }
+
         inExercise = true;
     }
 
-    private void stopExercise() {
+    private void stopExercise(){
         if (isMocking) mockDataRunnable.isActive = false;
         inExercise = false;
     }
-
     private void updateProgress(String result) {
         // this is not in UI thread so need to use the runOnUIThread method
-        runOnUiThread(() -> {
+        getActivity().runOnUiThread(() -> {
             grade.setText(result);
-            switch (result) {
+            switch (result){
                 case "PERFECT":
                     grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
-                    perfect += 1;
+                    perfect+=1;
                     Log.d(TAG, "updateProgress: p: " + perfect);
                     break;
                 case "GOOD":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondary));
-                    good += 1;
+                    good+=1;
                     Log.d(TAG, "updateProgress: g: " + good);
                     break;
                 case "POOR":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondaryVariant));
-                    poor += 1;
+                    poor+=1;
                     Log.d(TAG, "updateProgress: pr: " + poor);
             }
             tv.setText(String.format("%d Steps", currentStep));
@@ -277,6 +249,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             p.setText(Integer.toString(poor));
         });
     }
+
 
     private void process_data(int[] pressureData) {
         Log.i("LiveActivity", Arrays.toString(pressureData));
@@ -289,28 +262,27 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (!isMocking) {
+            if (!isMocking){
                 write(result);
             }
             currentStep += 1;
             Log.d(TAG, "process_data: " + currentStep);
             updateProgress(result);
         }
-        runOnUiThread(() -> {
-            updatePressureImageView(pressureData, nowInLowState);
+        getActivity().runOnUiThread(()->{
+            updatePressureImageView(pressureData,nowInLowState);
         });
     }
 
-    private boolean isAllZero(int[] pressure) {
-        for (int i = 0; i < pressure.length; i++) {
+    private boolean isAllZero(int[] pressure){
+        for (int i = 0; i < pressure.length; i++){
             // once it is non-zero, not all is zero
-            if (pressure[i] > 0) {
+            if (pressure[i]>0){
                 return false;
             }
         }
         return true;
     }
-
     /*
      * Serial + UI
      */
@@ -324,7 +296,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
             connected = Connected.Pending;
             socket = new SerialSocket();
             service.connect(this, "Connected to " + deviceName);
-            socket.connect(this, service, device);
+            socket.connect(getActivity(), service, device);
         } catch (Exception e) {
             onSerialConnectError(e);
         }
@@ -334,7 +306,7 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         Log.d("L SC", "disconnect");
         connected = Connected.False;
         service.disconnect();
-        if (socket != null) {
+        if (socket!=null){
             socket.disconnect();
         }
         socket = null;
@@ -349,9 +321,9 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
 
     private void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
         ArrayList<String> color_result = PressureColor.get_color(pressureData);
-        for (int i = 0; i < color_result.size(); i++) {
+        for (int i=0; i < color_result.size(); i++){
             String color = color_result.get(i);
-            switch (color) {
+            switch (color){
                 case "g":
                     pressureImageView[i].setImageResource(R.drawable.circle_grey);
                     break;
@@ -368,25 +340,24 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
         }
 
         /***
-         for (int i = 0; i < 6; i++) {
-         //int ScaledPressure = pressureData[i] / 200;
-         //pressureImageView[i].setText(String.format(Locale.US, "%d", ScaledPressure));
-         if (in_low_state){
-         switch (stepChecker.checkIndividual(i,pressureData[i])){
-         case "perfect":
-         pressureImageView[i].setImageResource(R.drawable.circle_green);
-         break;
-         case "good":
-         pressureImageView[i].setImageResource(R.drawable.circle_yellow);
-         break;
-         case "poor":
-         pressureImageView[i].setImageResource(R.drawable.circle_red);
-         break;
-         }
-         }
-         }***/
+        for (int i = 0; i < 6; i++) {
+            //int ScaledPressure = pressureData[i] / 200;
+            //pressureImageView[i].setText(String.format(Locale.US, "%d", ScaledPressure));
+            if (in_low_state){
+                switch (stepChecker.checkIndividual(i,pressureData[i])){
+                    case "perfect":
+                        pressureImageView[i].setImageResource(R.drawable.circle_green);
+                        break;
+                    case "good":
+                        pressureImageView[i].setImageResource(R.drawable.circle_yellow);
+                        break;
+                    case "poor":
+                        pressureImageView[i].setImageResource(R.drawable.circle_red);
+                        break;
+                }
+            }
+        }***/
     }
-
     /*
      * SerialListener
      */
@@ -440,13 +411,13 @@ public class LiveActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void write(String result) {
-        try {
-            if (result == "PERFECT") {
-                socket.write(new byte[]{0x0});
+        try{
+            if (result =="PERFECT") {
+                socket.write(new byte[] {0x0});
             } else if (result == "GOOD") {
-                socket.write(new byte[]{0x1});
+                socket.write(new byte[] {0x1});
             } else if (result == "POOR") {
-                socket.write(new byte[]{0x2});
+                socket.write(new byte[] {0x2});
             }
         } catch (IOException e) {
             Log.e(TAG, e.toString());
