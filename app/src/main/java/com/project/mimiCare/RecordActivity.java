@@ -25,20 +25,19 @@ import com.project.mimiCare.Utils.SharedPreferenceHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RecordActivity extends AppCompatActivity {
+public class RecordActivity extends WalkingActivity {
     private static final String TAG = "RecordActivityMimicare";
     private static final String subKey = "recordData";
 
     private boolean inRecord;
     private int currentStep;
     private RecordData recordData;
-    private MockDataRunnable mockDataRunnable;
+
     private Boolean isDone;
 
     private ProgressBar progressBar;
     private TextView record_step_text;
     private TextView record_data_text;
-    private ImageView[] pressureImageView = new ImageView[8];
     private Thread mockDataThread;
     private Boolean isMocking = true;
     @Override
@@ -206,34 +205,9 @@ public class RecordActivity extends AppCompatActivity {
         inRecord = true;
     }
 
-    class MockDataRunnable implements Runnable {
-        boolean isActive = true;
 
-        private void sleep(long millis) {
-            try {
-                Thread.sleep(millis);
-            } catch (InterruptedException e) {
-                Log.e("MOCK", e.getMessage());
-            }
-        }
-
-        @Override
-        public void run() {
-            // short pause before starting the thread
-            sleep(1000);
-            MockStepGenerator mockStepGenerator = new MockStepGenerator();
-            Log.i("MOCK", "Mock data thread is started");
-            while (isActive) {
-                int [] record_mock_data = mockStepGenerator.nextRandom();
-                process_data(record_mock_data);
-                // short pause
-                sleep(500);
-            }
-            Log.i("MOCK", "Mock data thread is stopping");
-        }
-    }
-
-    private void process_data(int[] record) {
+    @Override
+    protected void process_data(int[] record) {
         if (record==null){
             return;
         }
@@ -281,24 +255,7 @@ public class RecordActivity extends AppCompatActivity {
         Log.d(TAG, "Data recorded: " + Arrays.toString(record));
         progressBar.setProgress(currentStep);
 
-        ArrayList<String> color_result = PressureColor.get_color(record);
-        for (int i=0; i < color_result.size(); i++){
-            String color = color_result.get(i);
-            switch (color){
-                case "g":
-                    pressureImageView[i].setImageResource(R.drawable.circle_grey);
-                    break;
-                case "lb":
-                    pressureImageView[i].setImageResource(R.drawable.circle_lightblue);
-                    break;
-                case "b":
-                    pressureImageView[i].setImageResource(R.drawable.circle_blue);
-                    break;
-                case "db":
-                    pressureImageView[i].setImageResource(R.drawable.circle_darkblue);
-                    break;
-            }
-        }
+        updatePressureImageView(record, null);
     }
 
     private void alertSuccess(){

@@ -38,8 +38,6 @@
         <activity android:name="com.project.mimiCare.RegisterActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:screenOrientation="portrait" />
-        <activity android:name="com.project.mimiCare.LiveActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="com.project.mimiCare.RecordActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".AssignmentStepActivity"

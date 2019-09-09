@@ -27,7 +27,6 @@ import com.google.gson.reflect.TypeToken;
 import com.project.mimiCare.Adapters.AssignmentRecyclerAdapter;
 import com.project.mimiCare.AssignmentStepActivity;
 import com.project.mimiCare.Data.Assignment;
-import com.project.mimiCare.LiveActivity;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;

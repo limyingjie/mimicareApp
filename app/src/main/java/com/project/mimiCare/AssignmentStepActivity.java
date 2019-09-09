@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class AssignmentStepActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
+public class AssignmentStepActivity extends WalkingActivity implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
     private static final String subKey1 = "assignment";
     private static final String subKey2 = "recordData";
@@ -38,8 +38,7 @@ public class AssignmentStepActivity extends AppCompatActivity implements Service
     private enum Connected {False, Pending, True}
 
     private String deviceAddress;
-
-    private ImageView[] pressureImageView = new ImageView[8];
+    
     private TextView grade, assignment_tv;
     private TextView tv,pr,g,p;
     private ProgressBar progressBar;
@@ -62,7 +61,6 @@ public class AssignmentStepActivity extends AppCompatActivity implements Service
     BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
     Thread mockDataThread;
-    MockDataRunnable mockDataRunnable;
     boolean isMocking = false;
 
     public AssignmentStepActivity() {
@@ -281,7 +279,8 @@ public class AssignmentStepActivity extends AppCompatActivity implements Service
         });
     }
 
-    private void process_data(int[] pressureData) {
+    @Override
+    protected void process_data(int[] pressureData) {
         Log.i("LiveActivity", Arrays.toString(pressureData));
 
         if (pressureData == null) {
@@ -365,45 +364,6 @@ public class AssignmentStepActivity extends AppCompatActivity implements Service
         Log.d("L", str);
     }
 
-    private void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
-        ArrayList<String> color_result = PressureColor.get_color(pressureData);
-        for (int i=0; i < color_result.size(); i++){
-            String color = color_result.get(i);
-            switch (color){
-                case "g":
-                    pressureImageView[i].setImageResource(R.drawable.circle_grey);
-                    break;
-                case "lb":
-                    pressureImageView[i].setImageResource(R.drawable.circle_lightblue);
-                    break;
-                case "b":
-                    pressureImageView[i].setImageResource(R.drawable.circle_blue);
-                    break;
-                case "db":
-                    pressureImageView[i].setImageResource(R.drawable.circle_darkblue);
-                    break;
-            }
-        }
-
-        /***
-         for (int i = 0; i < 6; i++) {
-         //int ScaledPressure = pressureData[i] / 200;
-         //pressureImageView[i].setText(String.format(Locale.US, "%d", ScaledPressure));
-         if (in_low_state){
-         switch (stepChecker.checkIndividual(i,pressureData[i])){
-         case "perfect":
-         pressureImageView[i].setImageResource(R.drawable.circle_green);
-         break;
-         case "good":
-         pressureImageView[i].setImageResource(R.drawable.circle_yellow);
-         break;
-         case "poor":
-         pressureImageView[i].setImageResource(R.drawable.circle_red);
-         break;
-         }
-         }
-         }***/
-    }
     /*
      * SerialListener
      */
@@ -431,30 +391,6 @@ public class AssignmentStepActivity extends AppCompatActivity implements Service
         disconnect();
     }
 
-    class MockDataRunnable implements Runnable {
-        boolean isActive = true;
-
-        private void sleep(long millis) {
-            try {
-                Thread.sleep(millis);
-            } catch (InterruptedException e) {
-                Log.e("MOCK", e.getMessage());
-            }
-        }
-
-        @Override
-        public void run() {
-            sleep(1000);
-            MockStepGenerator mockStepGenerator = new MockStepGenerator();
-            Log.i("MOCK", "Mock data thread is started");
-            while (isActive) {
-                int[] data = mockStepGenerator.nextRandom();
-                process_data(data);
-                sleep(500);
-            }
-            Log.i("MOCK", "Mock data thread is stopping");
-        }
-    }
 
     private void write(String result) {
         try{
