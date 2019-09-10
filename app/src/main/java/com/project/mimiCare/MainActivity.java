@@ -92,17 +92,22 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     Fragment selectedFragment = null;
+                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
                     switch (menuItem.getItemId()){
                         case R.id.item_home:
+                            if (f instanceof MainMenuFragment) return false;
                             selectedFragment = new MainMenuFragment();
                             break;
                         case R.id.item_walk:
+                            if (f instanceof LiveFragment) return false;
                             selectedFragment = new LiveFragment();
                             break;
                         case R.id.item_data:
+                            if (f instanceof UserFragment) return false;
                             selectedFragment = new UserFragment();
                             break;
                         case R.id.item_goal:
+                            if (f instanceof AssignmentFragment) return false;
                             selectedFragment = new AssignmentFragment();
                             break;
                     }
