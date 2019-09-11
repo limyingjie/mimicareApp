@@ -65,7 +65,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     Thread mockDataThread;
     MockDataRunnable mockDataRunnable;
-    boolean isMocking = false;
+    boolean isMocking = true;
 
     public LiveFragment() {
     }
@@ -90,10 +90,10 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
         // change to fragment argument
         try {
-            deviceAddress = getArguments().getString("device",null);
+            deviceAddress = AppState.getBleDeviceAddress();
         }
         catch (Exception e){
-            deviceAddress = AppState.getBleDeviceAddress();
+            deviceAddress = null;
         }
 
         if (deviceAddress==null){

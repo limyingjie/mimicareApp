@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
+import com.project.mimiCare.Data.AppState;
 import com.project.mimiCare.Data.Assignment;
 import com.project.mimiCare.Utils.BluetoothDataHandler;
 import com.project.mimiCare.Utils.MockStepGenerator;
@@ -30,12 +31,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class AssignmentStepActivity extends WalkingActivity implements ServiceConnection, SerialListener {
+public class AssignmentStepActivity extends WalkingActivity {
     private static final String TAG = "LiveActivity";
     private static final String subKey1 = "assignment";
     private static final String subKey2 = "recordData";
-
-    private enum Connected {False, Pending, True}
 
     private String deviceAddress;
     
@@ -43,12 +42,6 @@ public class AssignmentStepActivity extends WalkingActivity implements ServiceCo
     private TextView tv,pr,g,p;
     private ProgressBar progressBar;
 
-    private SerialSocket socket;
-    private SerialService service;
-    private boolean initialStart = true;
-    private Connected connected = Connected.False;
-
-    private boolean inExercise = false;
     private boolean isDone = false;
     private int currentStep,targetStep,position,poor,good,perfect;
     private String assignmentTitle;
@@ -61,7 +54,6 @@ public class AssignmentStepActivity extends WalkingActivity implements ServiceCo
     BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
     Thread mockDataThread;
-    boolean isMocking = false;
 
     public AssignmentStepActivity() {
     }
@@ -81,7 +73,7 @@ public class AssignmentStepActivity extends WalkingActivity implements ServiceCo
 
         Intent intent = getIntent();
         if (intent!=null) {
-            deviceAddress = intent.getStringExtra("device");
+            deviceAddress = AppState.getBleDeviceAddress();
             Assignment assignment = intent.getParcelableExtra("assignment");
             if (assignment!=null){
                 assignmentTitle = assignment.getName();
@@ -204,19 +196,6 @@ public class AssignmentStepActivity extends WalkingActivity implements ServiceCo
         startExercise();
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder binder) {
-        service = ((SerialService.SerialBinder) binder).getService();
-        if (initialStart) {
-            initialStart = false;
-            runOnUiThread(this::connect);
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        service = null;
-    }
 
     private void loadPreferenceData(){
         Log.d(TAG, "loadPreferenceData: Load");
@@ -327,68 +306,6 @@ public class AssignmentStepActivity extends WalkingActivity implements ServiceCo
             }
         }
         return true;
-    }
-    /*
-     * Serial + UI
-     */
-    private void connect() {
-        Log.d("L SC", "connect");
-        try {
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-            String deviceName = device.getName() != null ? device.getName() : device.getAddress();
-            status("connecting...");
-            connected = Connected.Pending;
-            socket = new SerialSocket();
-            service.connect(this, "Connected to " + deviceName);
-            socket.connect(this, service, device);
-        } catch (Exception e) {
-            onSerialConnectError(e);
-        }
-    }
-
-    private void disconnect() {
-        Log.d("L SC", "disconnect");
-        connected = Connected.False;
-        service.disconnect();
-        if (socket!=null){
-            socket.disconnect();
-        }
-        socket = null;
-    }
-
-    private void status(String str) {
-        /*SpannableStringBuilder spn = new SpannableStringBuilder(str+'\n');
-        spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        receiveText.append(spn);*/
-        Log.d("L", str);
-    }
-
-    /*
-     * SerialListener
-     */
-    @Override
-    public void onSerialConnect() {
-        status("connected");
-        connected = Connected.True;
-    }
-
-    @Override
-    public void onSerialConnectError(Exception e) {
-        status("connection failed: " + e.getMessage());
-        disconnect();
-    }
-
-    @Override
-    public void onSerialRead(byte[] data) {
-        if (inExercise && !isMocking)
-            process_data(bluetoothDataHandler.receive(data));
-    }
-
-    @Override
-    public void onSerialIoError(Exception e) {
-        status("connection lost: " + e.getMessage());
-        disconnect();
     }
 
 
