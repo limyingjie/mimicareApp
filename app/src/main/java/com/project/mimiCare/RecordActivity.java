@@ -39,7 +39,7 @@ public class RecordActivity extends WalkingActivity {
     private TextView record_step_text;
     private TextView record_data_text;
     private Thread mockDataThread;
-    private Boolean isMocking = true;
+    private Boolean isMocking = false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

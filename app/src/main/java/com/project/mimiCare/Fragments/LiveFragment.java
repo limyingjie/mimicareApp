@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
+import com.project.mimiCare.Data.AppState;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
 import com.project.mimiCare.Services.SerialListener;
@@ -92,7 +93,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             deviceAddress = getArguments().getString("device",null);
         }
         catch (Exception e){
-            deviceAddress = null;
+            deviceAddress = AppState.getBleDeviceAddress();
         }
 
         if (deviceAddress==null){
