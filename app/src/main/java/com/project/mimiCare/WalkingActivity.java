@@ -38,7 +38,7 @@ public abstract class WalkingActivity extends AppCompatActivity implements Servi
 
     protected BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
-    protected boolean isMocking = false;
+    protected boolean isMocking = true;
     protected boolean inExercise = false;
 
     @Override

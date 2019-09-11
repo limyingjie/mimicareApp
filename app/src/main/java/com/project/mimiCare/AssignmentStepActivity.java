@@ -312,11 +312,11 @@ public class AssignmentStepActivity extends WalkingActivity {
     private void write(String result) {
         try{
             if (result =="PERFECT") {
-                socket.write(new byte[] {0x0});
+                socket.write("r".getBytes());
             } else if (result == "GOOD") {
-                socket.write(new byte[] {0x1});
+                socket.write("g".getBytes());
             } else if (result == "POOR") {
-                socket.write(new byte[] {0x2});
+                socket.write("0".getBytes());
             }
         } catch (IOException e) {
             Log.e(TAG, e.toString());

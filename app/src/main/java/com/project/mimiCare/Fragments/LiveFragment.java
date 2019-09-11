@@ -65,7 +65,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     Thread mockDataThread;
     MockDataRunnable mockDataRunnable;
-    boolean isMocking = true;
+    boolean isMocking = false;
 
     public LiveFragment() {
     }
