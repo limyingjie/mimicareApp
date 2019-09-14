@@ -5,19 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
+    <!--Progress View-->
     <View
-        android:id="@+id/view2"
+        android:id="@+id/viewProgress"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         android:background="@drawable/gradient_user_profile"
-        app:layout_constraintBottom_toTopOf="@+id/record_feet"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.4"/>
 
+    <ProgressBar
+        android:id="@+id/record_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp"
+        android:background="@drawable/circular_progressbar_background"
+        android:indeterminate="false"
+        android:max="20"
+        android:progress="0"
+        android:progressDrawable="@drawable/circular_progressbar"
+        app:layout_constraintBottom_toBottomOf="@+id/viewProgress"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/viewProgress"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/viewProgress"
+        app:layout_constraintTop_toTopOf="@+id/viewProgress"
+        app:layout_constraintVertical_chainStyle="spread_inside" />
 
     <TextView
         android:id="@+id/textView2"
@@ -46,7 +64,98 @@
         app:layout_constraintTop_toTopOf="@+id/record_progressBar"
         app:layout_constraintVertical_bias="0.69" />
 
+    <!--Legend View-->
+    <View
+        android:id="@+id/viewLegend"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintBottom_toTopOf="@+id/record_feet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewProgress" />
 
+    <ImageView
+        android:id="@+id/legend0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle_grey"
+        app:layout_constraintBottom_toBottomOf="@id/viewLegend"
+        app:layout_constraintEnd_toEndOf="@id/viewLegend"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toStartOf="@id/viewLegend"
+        app:layout_constraintTop_toTopOf="@id/viewLegend"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <ImageView
+        android:id="@+id/legend1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle_lightblue"
+        app:layout_constraintBottom_toBottomOf="@id/viewLegend"
+        app:layout_constraintEnd_toEndOf="@id/viewLegend"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@id/viewLegend"
+        app:layout_constraintTop_toTopOf="@id/viewLegend"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <ImageView
+        android:id="@+id/legend2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle_blue"
+        app:layout_constraintBottom_toBottomOf="@id/viewLegend"
+        app:layout_constraintEnd_toEndOf="@id/viewLegend"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="@id/viewLegend"
+        app:layout_constraintTop_toTopOf="@id/viewLegend"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <ImageView
+        android:id="@+id/legend3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle_darkblue"
+        app:layout_constraintBottom_toBottomOf="@id/viewLegend"
+        app:layout_constraintEnd_toEndOf="@id/viewLegend"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="@id/viewLegend"
+        app:layout_constraintTop_toTopOf="@id/viewLegend"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <TextView
+    android:id="@+id/legendLow"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:gravity="center"
+    android:text="@string/legendLow"
+    android:textColor="#333"
+    android:textSize="14sp"
+    app:layout_constraintBottom_toBottomOf="@id/viewLegend"
+    app:layout_constraintEnd_toEndOf="@id/viewLegend"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="@id/viewLegend"
+    app:layout_constraintTop_toTopOf="@id/viewLegend"
+    app:layout_constraintVertical_bias="0.5" />
+
+    <TextView
+        android:id="@+id/legendHigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="@string/legendHigh"
+        android:textColor="#333"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/viewLegend"
+        app:layout_constraintEnd_toEndOf="@id/viewLegend"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@id/viewLegend"
+        app:layout_constraintTop_toTopOf="@id/viewLegend"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <!--Feet View-->
     <ImageView
         android:id="@+id/record_feet"
         android:layout_width="0dp"
@@ -57,26 +166,10 @@
         app:layout_constraintDimensionRatio="W,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/record_progressBar"
+        app:layout_constraintTop_toBottomOf="@+id/viewLegend"
         app:srcCompat="@drawable/foot_clear" />
 
-    <ProgressBar
-        android:id="@+id/record_progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/circular_progressbar_background"
-        android:indeterminate="false"
-        android:max="20"
-        android:progress="0"
-        android:progressDrawable="@drawable/circular_progressbar"
-        app:layout_constraintBottom_toTopOf="@+id/record_feet"
-        app:layout_constraintDimensionRatio="W,1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread_inside" />
+
 
     <ImageView
         android:id="@+id/p0"
@@ -115,7 +208,6 @@
         app:layout_constraintStart_toStartOf="@id/record_feet"
         app:layout_constraintTop_toTopOf="@id/record_feet"
         app:layout_constraintVertical_bias="0.57" />
-
 
     <ImageView
         android:id="@+id/p3"
@@ -176,4 +268,5 @@
         app:layout_constraintStart_toStartOf="@id/record_feet"
         app:layout_constraintTop_toTopOf="@id/record_feet"
         app:layout_constraintVertical_bias="0.175" />
+
 </android.support.constraint.ConstraintLayout>

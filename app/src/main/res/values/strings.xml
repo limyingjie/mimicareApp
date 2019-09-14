@@ -31,5 +31,7 @@
     <string name="dob">Date of Birth</string>
     <string name="home">Home</string>
     <string name="date">Due in %s</string>
+    <string name="legendLow">Low\nPressure</string>
+    <string name="legendHigh">High\nPressure</string>
 
 </resources>
