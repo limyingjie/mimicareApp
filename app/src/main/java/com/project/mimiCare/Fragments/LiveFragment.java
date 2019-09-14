@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
+import com.project.mimiCare.Constants;
 import com.project.mimiCare.Data.AppState;
 import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
@@ -65,7 +66,6 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     Thread mockDataThread;
     MockDataRunnable mockDataRunnable;
-    boolean isMocking = false;
 
     public LiveFragment() {
     }
@@ -97,7 +97,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         }
 
         if (deviceAddress==null){
-            isMocking = true;
+            Log.w(TAG, "no device found, maybe turn on mock?");
         }
         int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(getActivity(),subKey2,new TypeToken<int[]>(){}.getType());
 
@@ -209,7 +209,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     }
 
     private void startExercise() {
-        if (isMocking) {
+        if (Constants.IS_MOCKING) {
             mockDataRunnable = new MockDataRunnable();
             // create new thread
             mockDataThread = new Thread(mockDataRunnable);
@@ -221,7 +221,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     }
 
     private void stopExercise(){
-        if (isMocking) mockDataRunnable.isActive = false;
+        if (Constants.IS_MOCKING) mockDataRunnable.isActive = false;
         inExercise = false;
     }
     private void updateProgress(String result) {
@@ -263,7 +263,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (!isMocking){
+            if (!Constants.IS_MOCKING){
                 write(result);
             }
             currentStep += 1;
@@ -376,7 +376,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     @Override
     public void onSerialRead(byte[] data) {
-        if (inExercise && !isMocking)
+        if (inExercise && !Constants.IS_MOCKING)
             process_data(bluetoothDataHandler.receive(data));
     }
 

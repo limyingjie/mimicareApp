@@ -2,6 +2,7 @@ package com.project.mimiCare;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.project.mimiCare.Data.RecordData;
+import com.project.mimiCare.Services.SerialService;
 import com.project.mimiCare.Utils.MockStepGenerator;
 import com.project.mimiCare.Utils.PressureColor;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;
@@ -71,6 +73,9 @@ public class RecordActivity extends WalkingActivity {
         pressureImageView[7] = findViewById(R.id.p7);
 
         Log.d(TAG, "onCreate: Called");
+
+        // bind service
+        bindService(new Intent(this, SerialService.class), this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -96,8 +101,9 @@ public class RecordActivity extends WalkingActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onSerialRead(byte[] data) {
+        if (inRecord && !Constants.IS_MOCKING)
+            process_data(bluetoothDataHandler.receive(data));
     }
 
     // save and append as a text file
@@ -187,14 +193,14 @@ public class RecordActivity extends WalkingActivity {
     }
 
     private void stopRecord(){
-        if (isMocking){
+        if (Constants.IS_MOCKING){
             mockDataRunnable.isActive = false;
         }
         inRecord = false;
     }
 
     private void startRecord(){
-        if (isMocking){
+        if (Constants.IS_MOCKING){
             // start runnable
             mockDataRunnable = new MockDataRunnable();
 

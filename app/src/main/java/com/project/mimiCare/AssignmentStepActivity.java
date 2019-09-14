@@ -93,7 +93,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         }
 
         if (deviceAddress==null){
-            isMocking = true;
+            Log.w(TAG, "no device found, maybe turn on mock?");
         }
         // load Data
         loadPreferenceData();
@@ -196,6 +196,11 @@ public class AssignmentStepActivity extends WalkingActivity {
         startExercise();
     }
 
+    @Override
+    public void onSerialRead(byte[] data) {
+        if (inExercise && !Constants.IS_MOCKING)
+            process_data(bluetoothDataHandler.receive(data));
+    }
 
     private void loadPreferenceData(){
         Log.d(TAG, "loadPreferenceData: Load");
@@ -215,7 +220,7 @@ public class AssignmentStepActivity extends WalkingActivity {
 
     }
     private void startExercise() {
-        if (isMocking) {
+        if (Constants.IS_MOCKING) {
             mockDataRunnable = new MockDataRunnable();
             // create new thread
             mockDataThread = new Thread(mockDataRunnable);
@@ -226,7 +231,7 @@ public class AssignmentStepActivity extends WalkingActivity {
     }
 
     private void stopExercise(){
-        if (isMocking) mockDataRunnable.isActive = false;
+        if (Constants.IS_MOCKING) mockDataRunnable.isActive = false;
         inExercise = false;
     }
 
@@ -270,7 +275,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (!isMocking){
+            if (!Constants.IS_MOCKING){
                 write(result);
             }
             currentStep += 1;

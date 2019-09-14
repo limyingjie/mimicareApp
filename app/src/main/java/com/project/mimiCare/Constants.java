@@ -18,8 +18,7 @@ public class Constants {
     public static final UUID FOOT_BLE_RW = UUID.fromString("beb5483e-36e1-4688-b7f5-ea07361b26a8");
     public static final UUID FOOT_BLE_R_NOTIFY = UUID.fromString("beb5483e-36e1-4688-b7f5-ea07361b26a9");
 
-    public static final boolean IS_MOCKING = false; //todo unify all is mockings to use this var
-
+    public static final boolean IS_MOCKING = false;
     private Constants() {
     }
 }

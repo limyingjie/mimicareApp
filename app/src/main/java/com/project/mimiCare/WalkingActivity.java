@@ -38,7 +38,6 @@ public abstract class WalkingActivity extends AppCompatActivity implements Servi
 
     protected BluetoothDataHandler bluetoothDataHandler = new BluetoothDataHandler();
 
-    protected boolean isMocking = true;
     protected boolean inExercise = false;
 
     @Override
@@ -88,12 +87,6 @@ public abstract class WalkingActivity extends AppCompatActivity implements Servi
     public void onSerialConnectError(Exception e) {
         status("connection failed: " + e.getMessage());
         disconnect();
-    }
-
-    @Override
-    public void onSerialRead(byte[] data) {
-        if (inExercise && !isMocking)
-            process_data(bluetoothDataHandler.receive(data));
     }
 
     @Override
