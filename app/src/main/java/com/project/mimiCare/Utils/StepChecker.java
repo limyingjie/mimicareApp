@@ -2,10 +2,15 @@ package com.project.mimiCare.Utils;
 
 import android.util.Log;
 
+import java.util.Arrays;
+
 public class StepChecker {
-    private int PERFECT_THRESHOLD = 30*8;
-    private int GOOD_THRESHOLD = 50*8;
+    private int GOOD_THRESHOLD = 60;
     private int[] correctStepPressure;
+
+    private int peakTotalPressure = 0;
+    private int TOTAL_PRESSURE_DIFF_THRESHOLD = 40;
+    private int[] peakStepReading;
 
     public StepChecker(int[] correctStepPressure) {
         this.correctStepPressure = correctStepPressure;
@@ -16,23 +21,22 @@ public class StepChecker {
             throw new RuntimeException("Number of readings don't match!");
         }
 
-        int difference = 0;
-        for (int i = 0; i < correctStepPressure.length; i++) {
-            difference += Math.abs(step[i] - correctStepPressure[i]);
-        }
-        Log.d("StepChecker", "Difference: " + difference);
+        int totalPressure = calcTotalPressure(step);
 
-        String result;
-
-        // check the total difference
-        if (difference <= PERFECT_THRESHOLD) {
-            result = "PERFECT";
-        } else if (difference <= GOOD_THRESHOLD) {
-            result = "GOOD";
-        } else {
-            result = "POOR";
+        // we only grade the reading when the step is at its peak pressure (ie foot fully on ground)
+        if (totalPressure < peakTotalPressure - TOTAL_PRESSURE_DIFF_THRESHOLD) {
+            // feet is already lifting off after its peak, so we grade that step;
+            peakTotalPressure = 0; // reset this value
+            String result = grade(peakStepReading);
+            return result;
         }
-        return result;
+        else {
+             if (peakTotalPressure < totalPressure) {
+                 peakTotalPressure = totalPressure;
+                 peakStepReading = step;
+             }
+            return null;
+        }
     }
 
     public String checkIndividual(int position, int step){
@@ -46,5 +50,31 @@ public class StepChecker {
         else{
             return "poor";
         }
+    }
+
+    private int calcTotalPressure(int[] step) {
+        int sum = 0;
+        for (int i = 0; i < step.length; i++) {
+            sum += step[i];
+        }
+        return sum;
+    }
+
+    private String grade(int[] step) {
+        int difference = 0;
+        for (int i = 0; i < correctStepPressure.length; i++) {
+            difference += Math.abs(step[i] - correctStepPressure[i]);
+        }
+        Log.d("StepChecker", "Difference: " + difference);
+
+        String result;
+
+        // check the total difference
+        if (difference <= GOOD_THRESHOLD) {
+            result = "GOOD";
+        } else {
+            result = "POOR";
+        }
+        return result;
     }
 }

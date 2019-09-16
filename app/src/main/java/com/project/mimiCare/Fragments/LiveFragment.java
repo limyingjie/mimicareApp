@@ -263,12 +263,14 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (!Constants.IS_MOCKING){
-                write(result);
+            if (result != null){
+                if (!Constants.IS_MOCKING){
+                    write(result);
+                }
+                currentStep += 1;
+                Log.d(TAG, "process_data: " + currentStep);
+                updateProgress(result);
             }
-            currentStep += 1;
-            Log.d(TAG, "process_data: " + currentStep);
-            updateProgress(result);
         }
         getActivity().runOnUiThread(()->{
             updatePressureImageView(pressureData,nowInLowState);
@@ -414,11 +416,11 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private void write(String result) {
         try{
             if (result =="PERFECT") {
-                socket.write(new byte[] {0x0});
+                socket.write("g".getBytes());
             } else if (result == "GOOD") {
-                socket.write(new byte[] {0x1});
+                socket.write("g".getBytes());
             } else if (result == "POOR") {
-                socket.write(new byte[] {0x2});
+                socket.write("br".getBytes());
             }
         } catch (IOException e) {
             Log.e(TAG, e.toString());

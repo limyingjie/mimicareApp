@@ -8,7 +8,7 @@ public class BluetoothDataHandler {
 
     public int[] receive(byte[] data) {
         String strData = new String(data);
-        Log.d(TAG, "message string received: " + strData);
+//        Log.d(TAG, "message string received: " + strData);
 
         int[] lineData = new int[8];
 
