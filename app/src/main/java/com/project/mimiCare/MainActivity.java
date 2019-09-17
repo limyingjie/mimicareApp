@@ -118,14 +118,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     public void changeTitle(int title){
         TextView textView = findViewById(R.id.toolbarTitle);
         switch (title){
-            case R.string.user:
-                textView.setGravity(Gravity.START);
-                textView.setText(R.string.user);
-                break;
-            case R.string.app_name:
-                textView.setGravity(Gravity.START);
-                textView.setText(R.string.app_name);
-                break;
             case R.string.assignment:
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(R.string.assignment);

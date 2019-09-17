@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -198,8 +199,12 @@ public class AssignmentStepActivity extends WalkingActivity {
 
     @Override
     public void onSerialRead(byte[] data) {
-        if (inExercise && !Constants.IS_MOCKING)
+        if (inExercise && !Constants.IS_MOCKING){
             process_data(bluetoothDataHandler.receive(data));
+            restart();
+        }
+
+
     }
 
     private void loadPreferenceData(){
@@ -277,6 +282,7 @@ public class AssignmentStepActivity extends WalkingActivity {
             String result = stepChecker.checkStep(pressureData);
             if (!Constants.IS_MOCKING){
                 write(result);
+                restart();
             }
             currentStep += 1;
             Log.d(TAG, "process_data: " + currentStep);
@@ -288,6 +294,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         // when it is done
         if (currentStep>=progressBar.getMax()){
             isDone = true;
+            stop();
             // save the data
             savePreferenceData();
             // change the UI
@@ -326,5 +333,31 @@ public class AssignmentStepActivity extends WalkingActivity {
         } catch (IOException e) {
             Log.e(TAG, e.toString());
         }
+    }
+    public static Handler myHandler = new Handler();
+    private static final int TIME_TO_WAIT = 2000;
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            try{
+                socket.write("0".getBytes());
+            }
+            catch (IOException e){
+                Log.e(TAG, e.toString());
+            }
+        }
+    };
+
+    private void start(){
+        myHandler.postDelayed(runnable,TIME_TO_WAIT);
+    }
+
+    private void stop(){
+        myHandler.removeCallbacks(runnable);
+    }
+
+    private void restart(){
+        stop();
+        start();
     }
 }
