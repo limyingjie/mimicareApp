@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -37,12 +38,13 @@ public class AssignmentStepActivity extends WalkingActivity {
     private static final String subKey2 = "recordData";
 
     private String deviceAddress;
-    
+
     private TextView grade, assignment_tv;
     private TextView tv,pr,g,p;
     private ProgressBar progressBar;
 
     private boolean isDone = false;
+    private boolean startTimer = false;
     private int currentStep,targetStep,position,poor,good,perfect;
     private String assignmentTitle;
     private boolean inLowState = false;
@@ -275,14 +277,24 @@ public class AssignmentStepActivity extends WalkingActivity {
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (result != null) {
+            if (result!=null){
                 if (!Constants.IS_MOCKING){
                     write(result);
+                    if (!startTimer){
+                        Log.d(TAG, "Start timer");
+                        start();
+                        startTimer = true;
+                    }
+                    else{
+                        Log.d(TAG, "Restart timer");
+                        restart();
+                    }
                 }
                 currentStep += 1;
                 Log.d(TAG, "process_data: " + currentStep);
                 updateProgress(result);
             }
+
         }
         runOnUiThread(()->{
             updatePressureImageView(pressureData,nowInLowState);
@@ -328,5 +340,33 @@ public class AssignmentStepActivity extends WalkingActivity {
         } catch (IOException e) {
             Log.e(TAG, e.toString());
         }
+    }
+
+    public static Handler myHandler = new Handler();
+    private static final int TIME_TO_WAIT = 2000;
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            try{
+                Log.d(TAG, "run: stop the device");
+                socket.write("0".getBytes());
+            }
+            catch (IOException e){
+                Log.e(TAG, e.toString());
+            }
+        }
+    };
+
+    private void start(){
+        myHandler.postDelayed(runnable,TIME_TO_WAIT);
+    }
+
+    private void stop(){
+        myHandler.removeCallbacks(runnable);
+    }
+
+    private void restart(){
+        stop();
+        start();
     }
 }

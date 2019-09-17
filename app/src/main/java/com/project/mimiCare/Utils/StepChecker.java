@@ -5,11 +5,11 @@ import android.util.Log;
 import java.util.Arrays;
 
 public class StepChecker {
-    private int GOOD_THRESHOLD = 60;
+    private int GOOD_THRESHOLD = 80;
     private int[] correctStepPressure;
 
     private int peakTotalPressure = 0;
-    private int TOTAL_PRESSURE_DIFF_THRESHOLD = 40;
+    private int TOTAL_PRESSURE_DIFF_THRESHOLD = 30;
     private int[] peakStepReading;
 
     public StepChecker(int[] correctStepPressure) {
@@ -26,8 +26,10 @@ public class StepChecker {
         // we only grade the reading when the step is at its peak pressure (ie foot fully on ground)
         if (totalPressure < peakTotalPressure - TOTAL_PRESSURE_DIFF_THRESHOLD) {
             // feet is already lifting off after its peak, so we grade that step;
+            Log.d("step reading", Integer.toString(peakTotalPressure-totalPressure));
             peakTotalPressure = 0; // reset this value
             String result = grade(peakStepReading);
+
             return result;
         }
         else {
@@ -35,6 +37,7 @@ public class StepChecker {
                  peakTotalPressure = totalPressure;
                  peakStepReading = step;
              }
+            Log.d("non reading", Integer.toString(totalPressure-peakTotalPressure));
             return null;
         }
     }

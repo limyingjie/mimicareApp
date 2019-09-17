@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -266,6 +267,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             if (result != null){
                 if (!Constants.IS_MOCKING){
                     write(result);
+                    restart();
                 }
                 currentStep += 1;
                 Log.d(TAG, "process_data: " + currentStep);
@@ -425,5 +427,33 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         } catch (IOException e) {
             Log.e(TAG, e.toString());
         }
+    }
+
+    public static Handler myHandler = new Handler();
+    private static final int TIME_TO_WAIT = 2000;
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            try{
+                Log.d(TAG, "run: stop the device");
+                socket.write("0".getBytes());
+            }
+            catch (IOException e){
+                Log.e(TAG, e.toString());
+            }
+        }
+    };
+
+    private void start(){
+        myHandler.postDelayed(runnable,TIME_TO_WAIT);
+    }
+
+    private void stop(){
+        myHandler.removeCallbacks(runnable);
+    }
+
+    private void restart(){
+        stop();
+        start();
     }
 }
