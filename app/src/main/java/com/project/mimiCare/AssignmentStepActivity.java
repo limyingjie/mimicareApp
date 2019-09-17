@@ -275,12 +275,14 @@ public class AssignmentStepActivity extends WalkingActivity {
         boolean nowInLowState = !isAllZero(pressureData);
         if (nowInLowState) {
             String result = stepChecker.checkStep(pressureData);
-            if (!Constants.IS_MOCKING){
-                write(result);
+            if (result != null) {
+                if (!Constants.IS_MOCKING){
+                    write(result);
+                }
+                currentStep += 1;
+                Log.d(TAG, "process_data: " + currentStep);
+                updateProgress(result);
             }
-            currentStep += 1;
-            Log.d(TAG, "process_data: " + currentStep);
-            updateProgress(result);
         }
         runOnUiThread(()->{
             updatePressureImageView(pressureData,nowInLowState);
