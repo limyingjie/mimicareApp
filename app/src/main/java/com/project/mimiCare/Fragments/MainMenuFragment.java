@@ -53,7 +53,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
     private String[][] messages = {
             {"The weather\nlooks good~", "Let's go for\na walk shall we?"},
             {"Ahhh...\nI am starving...", "Shall we go\nget some food?"},
-            {"Cheese Burger!!!","Control yourself\nplease!"}
+            {"Just a\nfew more steps","a bit more..."}
     };
 
     private int minInterval = 10000;
