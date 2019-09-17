@@ -44,6 +44,7 @@ public class AssignmentStepActivity extends WalkingActivity {
     private ProgressBar progressBar;
 
     private boolean isDone = false;
+    private boolean startTimer = false;
     private int currentStep,targetStep,position,poor,good,perfect;
     private String assignmentTitle;
     private boolean inLowState = false;
@@ -282,7 +283,13 @@ public class AssignmentStepActivity extends WalkingActivity {
             String result = stepChecker.checkStep(pressureData);
             if (!Constants.IS_MOCKING){
                 write(result);
-                restart();
+                if (!startTimer){
+                    start();
+                    startTimer = true;
+                }
+                else{
+                    restart();
+                }
             }
             currentStep += 1;
             Log.d(TAG, "process_data: " + currentStep);
