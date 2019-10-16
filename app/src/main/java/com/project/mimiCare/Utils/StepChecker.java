@@ -5,11 +5,11 @@ import android.util.Log;
 import java.util.Arrays;
 
 public class StepChecker {
-    private int GOOD_THRESHOLD = 80;
+    private int GOOD_THRESHOLD = 105;
     private int[] correctStepPressure;
 
     private int peakTotalPressure = 0;
-    private int TOTAL_PRESSURE_DIFF_THRESHOLD = 30;
+    private int TOTAL_PRESSURE_DIFF_THRESHOLD = 45;
     private int[] peakStepReading;
 
     public StepChecker(int[] correctStepPressure) {
@@ -78,6 +78,7 @@ public class StepChecker {
         } else {
             result = "POOR";
         }
+        Log.d("StepChecker", result);
         return result;
     }
 }

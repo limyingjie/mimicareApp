@@ -38,6 +38,8 @@ import com.project.mimiCare.Utils.StepChecker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
@@ -270,7 +272,6 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
                     restart();
                 }
                 currentStep += 1;
-                Log.d(TAG, "process_data: " + currentStep);
                 updateProgress(result);
             }
         }
@@ -326,8 +327,11 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     private void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
         ArrayList<String> color_result = PressureColor.get_color(pressureData);
+        Collections.swap(color_result,0,5);
+        Collections.swap(color_result,2,4);
         for (int i=0; i < color_result.size(); i++){
             String color = color_result.get(i);
+            Log.d("hahahah", "updatePressureImageView: " + i);
             switch (color){
                 case "g":
                     pressureImageView[i].setImageResource(R.drawable.circle_grey);

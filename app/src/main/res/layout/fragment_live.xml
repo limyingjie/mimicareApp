@@ -101,7 +101,8 @@
         app:layout_constraintDimensionRatio="H,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grade" />
+        app:layout_constraintTop_toBottomOf="@+id/grade"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/p0"
