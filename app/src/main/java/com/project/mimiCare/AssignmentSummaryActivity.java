@@ -39,7 +39,7 @@ public class AssignmentSummaryActivity extends AppCompatActivity {
         // intent
         Intent intent = getIntent();
         if (intent!=null){
-            assignment = intent.getParcelableExtra("assignment");
+            assignment = intent.getParcelableExtra("assignmentKey");
             position = intent.getIntExtra("position",-1);
         }
         else{

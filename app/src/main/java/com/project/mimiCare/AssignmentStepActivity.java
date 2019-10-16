@@ -34,8 +34,8 @@ import java.util.Arrays;
 
 public class AssignmentStepActivity extends WalkingActivity {
     private static final String TAG = "LiveActivity";
-    private static final String subKey1 = "assignment";
-    private static final String subKey2 = "recordData";
+    private static final String subKey1 = "assignmentKey";
+    private static final String subKey2 = "recordDataKey";
 
     private String deviceAddress;
 
@@ -76,7 +76,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         Intent intent = getIntent();
         if (intent!=null) {
             deviceAddress = AppState.getBleDeviceAddress();
-            Assignment assignment = intent.getParcelableExtra("assignment");
+            Assignment assignment = intent.getParcelableExtra("assignmentKey");
             if (assignment!=null){
                 assignmentTitle = assignment.getName();
                 currentStep = assignment.getCurrent();
@@ -87,7 +87,7 @@ public class AssignmentStepActivity extends WalkingActivity {
                 position = intent.getIntExtra("position",-1);
             }
             else{
-                // if there is no assignment chosen, close the activity
+                // if there is no assignmentKey chosen, close the activity
                 finish();
             }
             Log.d(TAG, "onCreate: " + deviceAddress);
@@ -135,7 +135,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         tv = findViewById(R.id.progressText);
         grade = findViewById(R.id.grade);
 
-        // set the assignment title
+        // set the assignmentKey title
         assignment_tv.setText(assignmentTitle);
         // set the initial progress text and bar
         progressBar.setMax(targetStep);
@@ -183,7 +183,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         super.onPause();
         // stop the thread if it has started (they are exercising)
         stopExercise();
-        // update and save the data if there is an intent from assignment
+        // update and save the data if there is an intent from assignmentKey
         Log.d(TAG, "onPause: Save");
         savePreferenceData();
     }
@@ -206,7 +206,7 @@ public class AssignmentStepActivity extends WalkingActivity {
 
     private void loadPreferenceData(){
         Log.d(TAG, "loadPreferenceData: Load");
-        mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this,"assignment",
+        mAssignment = (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(this,"assignmentKey",
                 new TypeToken<ArrayList<Assignment>>(){}.getType());
     }
 
@@ -218,7 +218,7 @@ public class AssignmentStepActivity extends WalkingActivity {
         assignment.setPoor(poor);
         mAssignment.set(position,assignment);
         Log.d(TAG, "savePreferenceData: "+mAssignment);
-        SharedPreferenceHelper.savePreferenceData(this,"assignment",mAssignment);
+        SharedPreferenceHelper.savePreferenceData(this,"assignmentKey",mAssignment);
 
     }
     private void startExercise() {
@@ -311,7 +311,7 @@ public class AssignmentStepActivity extends WalkingActivity {
             // call the summary page
             runOnUiThread(()->{
                 Intent intent = new Intent(this,AssignmentSummaryActivity.class);
-                intent.putExtra("assignment",mAssignment.get(position));
+                intent.putExtra("assignmentKey",mAssignment.get(position));
                 startActivity(intent);
             });
         }

@@ -5,19 +5,27 @@ import android.util.Log;
 import java.util.Arrays;
 
 public class StepChecker {
-    private int GOOD_THRESHOLD = 105;
-    private int[] correctStepPressure;
+    private static int GOOD_THRESHOLD = 105;
+    private static int TOTAL_PRESSURE_DIFF_THRESHOLD = 45;
+    private static int marginPercentage = 30;
 
+    private int[] correctStepPressure;
+    private int upperMargin;
+    private int bottomMargin;
     private int peakTotalPressure = 0;
-    private int TOTAL_PRESSURE_DIFF_THRESHOLD = 45;
     private int[] peakStepReading;
 
     public StepChecker(int[] correctStepPressure) {
         this.correctStepPressure = correctStepPressure;
+        int totalCorrectStepPressure = calcTotalPressure(correctStepPressure);
+        double margin = totalCorrectStepPressure * marginPercentage;
+        upperMargin = (int) Math.ceil(totalCorrectStepPressure + margin);
+        bottomMargin = (int) Math.floor(totalCorrectStepPressure - margin);
     }
 
+    public StepChecker(){}
     public String checkStep(int[] step) {
-        if (step.length != correctStepPressure.length) {
+        if (correctStepPressure==null || step.length != correctStepPressure.length) {
             throw new RuntimeException("Number of readings don't match!");
         }
 
@@ -42,6 +50,27 @@ public class StepChecker {
         }
     }
 
+    public int[] validateStep(int[] step){
+
+        int totalPressure = calcTotalPressure(step);
+
+        // we only grade the reading when the step is at its peak pressure (ie foot fully on ground)
+        if (totalPressure < peakTotalPressure - TOTAL_PRESSURE_DIFF_THRESHOLD) {
+            // feet is already lifting off after its peak, so we grade that step;
+            Log.d("step reading", Integer.toString(peakTotalPressure-totalPressure));
+            peakTotalPressure = 0; // reset this value
+            return peakStepReading;
+        }
+        else {
+            if (peakTotalPressure < totalPressure) {
+                peakTotalPressure = totalPressure;
+                peakStepReading = step;
+            }
+            Log.d("non reading", Integer.toString(totalPressure-peakTotalPressure));
+            return null;
+        }
+
+    }
     public String checkIndividual(int position, int step){
         int diff = Math.abs(step - correctStepPressure[position]);
         if (diff < 1000){
@@ -73,9 +102,16 @@ public class StepChecker {
         String result;
 
         // check the total difference
-        if (difference <= GOOD_THRESHOLD) {
+/*        if (difference <= GOOD_THRESHOLD) {
             result = "GOOD";
         } else {
+            result = "POOR";
+        }*/
+
+        if (difference <= upperMargin && difference >= bottomMargin){
+            result = "GOOD";
+        }
+        else {
             result = "POOR";
         }
         Log.d("StepChecker", result);

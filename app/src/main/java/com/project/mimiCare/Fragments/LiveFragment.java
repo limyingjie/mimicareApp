@@ -43,7 +43,6 @@ import java.util.Collections;
 
 public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
-    private static final String subKey2 = "recordData";
 
     private enum Connected {False, Pending, True}
 
@@ -102,7 +101,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         if (deviceAddress==null){
             Log.w(TAG, "no device found, maybe turn on mock?");
         }
-        int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(getActivity(),subKey2,new TypeToken<int[]>(){}.getType());
+        int[] stepCheckerData = (int[])SharedPreferenceHelper.loadPreferenceData(getActivity(),SharedPreferenceHelper.recordDataKey,new TypeToken<int[]>(){}.getType());
 
         if (stepCheckerData != null){
             if (stepCheckerData.length != 8) stepCheckerData = null; //INVALID DATA
@@ -194,7 +193,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         super.onPause();
         // stop the thread if it has started (they are exercising)
         stopExercise();
-        // update and save the data if there is an intent from assignment
+        // update and save the data if there is an intent from assignmentKey
     }
 
     @Override

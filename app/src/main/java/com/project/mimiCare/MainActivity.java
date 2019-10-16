@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
     private static final String TAG = "MainActivity";
-    public String device;
     public Toolbar toolbar;
     public BottomNavigationViewEx bottomNav;
 
@@ -115,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                     return true;
                 }
             };
+
+
     public void changeTitle(int title){
         TextView textView = findViewById(R.id.toolbarTitle);
         switch (title){

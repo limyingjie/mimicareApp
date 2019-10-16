@@ -23,13 +23,14 @@ import com.project.mimiCare.Services.SerialService;
 import com.project.mimiCare.Utils.MockStepGenerator;
 import com.project.mimiCare.Utils.PressureColor;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;
+import com.project.mimiCare.Utils.StepChecker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RecordActivity extends WalkingActivity {
     private static final String TAG = "RecordActivityMimicare";
-    private static final String subKey = "recordData";
+    private static final String subKey = "recordDataKey";
 
     private boolean inRecord;
     private int currentStep;
@@ -41,21 +42,23 @@ public class RecordActivity extends WalkingActivity {
     private TextView record_step_text;
     private TextView record_data_text;
     private Thread mockDataThread;
+    private StepChecker stepChecker;
+
+    public RecordActivity() {
+        // initialize
+        currentStep = 0;
+        recordData = new RecordData();
+        isDone = false;
+        inRecord = false;
+        stepChecker = new StepChecker();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
         Intent intent = getIntent();
-        if (intent!=null){
 
-        }
-
-        // initialize
-        currentStep = 0;
-        recordData = new RecordData();
-        isDone = false;
-        inRecord = false;
         /*
         UI
          */
@@ -113,7 +116,7 @@ public class RecordActivity extends WalkingActivity {
         try {
             fos = openFileOutput("pressureRight.txt", Context.MODE_PRIVATE);
             StringBuilder sb = new StringBuilder();
-            for (int[] data : recordData.getAll()){
+            for (int[] data : recordDataKey.getAll()){
                 for (int i=0; i<data.length;i++){
                     sb.append(data[i]);
                     if (i < data.length-1){
@@ -220,10 +223,14 @@ public class RecordActivity extends WalkingActivity {
         boolean inLowState = !isAllZero(record);
         if (inLowState){
             Log.d(TAG, "process_data: " + Arrays.toString(record));
-            // add Data
-            currentStep++;
-            recordData.add(record);
 
+            // check if it is a step
+            int[] result = stepChecker.validateStep(record);
+            if (result!=null){
+                // add Data to the arrayList
+                currentStep++;
+                recordData.add(result);
+            }
             // update UI
             runOnUiThread(()->{
                 updateUI(currentStep,record);

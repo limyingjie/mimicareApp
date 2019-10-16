@@ -1,12 +1,6 @@
 package com.project.mimiCare.Fragments;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.project.mimiCare.Adapters.AssignmentRecyclerAdapter;
 import com.project.mimiCare.AssignmentStepActivity;
@@ -31,7 +24,6 @@ import com.project.mimiCare.MainActivity;
 import com.project.mimiCare.R;
 import com.project.mimiCare.Utils.SharedPreferenceHelper;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
@@ -81,8 +73,8 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
             for (Assignment data:mAssignments){
                 temporary_list.add(data.clone());
             }
-            // check if there are expired assignment and remove it
-            // check if there are finished assignment and then move it to the last position
+            // check if there are expired assignmentKey and remove it
+            // check if there are finished assignmentKey and then move it to the last position
 
             for (int pos = 0; pos < temporary_list.size();pos++){
                 Assignment item = temporary_list.get(pos);
@@ -181,7 +173,7 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
         Assignment item = mAssignments.get(position);
         if (!item.isDone()&&!item.isLate()){
             Intent intent = new Intent(getActivity(), AssignmentStepActivity.class);
-            intent.putExtra("assignment",item);
+            intent.putExtra("assignmentKey",item);
             intent.putExtra("position",position);
             startActivity(intent);
         }
@@ -272,12 +264,12 @@ public class AssignmentFragment extends Fragment implements AssignmentRecyclerAd
 
     private void saveSharedPreferenceData(){
         SharedPreferenceHelper.savePreferenceData(getActivity(),
-                SharedPreferenceHelper.assignment,mAssignments);
+                SharedPreferenceHelper.assignmentKey,mAssignments);
     }
 
     private ArrayList<Assignment> loadSharedPreferenceData(){
         return (ArrayList<Assignment>) SharedPreferenceHelper.loadPreferenceData(getActivity(),
-                SharedPreferenceHelper.assignment,
+                SharedPreferenceHelper.assignmentKey,
                 new TypeToken<ArrayList<Assignment>>() {}.getType());
     }
 }

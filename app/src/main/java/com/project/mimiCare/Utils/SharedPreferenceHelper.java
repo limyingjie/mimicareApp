@@ -9,8 +9,8 @@ import java.lang.reflect.Type;
 
 public class SharedPreferenceHelper {
     private static final String key = "mimiCare";
-    public static String recordData = "recordData";
-    public static String assignment = "assignment";
+    public static String recordDataKey = "recordData";
+    public static String assignmentKey = "assignment";
     public static void savePreferenceData(Context context,String subKey, Object object){
         SharedPreferences sharedPreferences = context.getSharedPreferences(key, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
