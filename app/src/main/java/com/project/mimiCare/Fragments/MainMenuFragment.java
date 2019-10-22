@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -203,7 +204,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         setRetainInstance(true);
         myDevice = null;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-/*        bleDiscoveryBroadcastReceiver = new BroadcastReceiver() {
+         bleDiscoveryBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
@@ -232,7 +233,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         bleDiscoveryIntentFilter = new IntentFilter();
         // add the intent action
         bleDiscoveryIntentFilter.addAction(BluetoothDevice.ACTION_FOUND);
-        bleDiscoveryIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);*/
+        bleDiscoveryIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
     }
 
     @Override
@@ -243,7 +244,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
             inAnimation = true;
         }
         // register the receiver and set the emptyText
-/*        getActivity().registerReceiver(bleDiscoveryBroadcastReceiver, bleDiscoveryIntentFilter);*/
+       getActivity().registerReceiver(bleDiscoveryBroadcastReceiver, bleDiscoveryIntentFilter);
         if(bluetoothAdapter == null || !getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
             Log.d(TAG, "onResume: <bluetooth LE not supported>");
             BLEstatus.setText("Bluetooth LE is not supported");}
@@ -280,7 +281,7 @@ public class MainMenuFragment extends Fragment implements changeHandler {
         // stop the scan and stop the bluetooth broadcast
         if (inScanning)
             stopScan();
-/*        getActivity().unregisterReceiver(bleDiscoveryBroadcastReceiver);*/
+      getActivity().unregisterReceiver(bleDiscoveryBroadcastReceiver);
         super.onPause();
     }
 

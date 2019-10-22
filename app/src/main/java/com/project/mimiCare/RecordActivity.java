@@ -63,6 +63,7 @@ public class RecordActivity extends WalkingActivity {
         UI
          */
         progressBar = findViewById(R.id.record_progressBar);
+        progressBar.setMax(10);
         record_step_text = findViewById(R.id.record_step);
         //record_data_text = findViewById(R.id.record_data);
 
@@ -92,14 +93,13 @@ public class RecordActivity extends WalkingActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
+        unbindService(this);
         if (inRecord) stopRecord();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         if (inRecord) stopRecord();
     }
 

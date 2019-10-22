@@ -58,7 +58,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     private Connected connected = Connected.False;
 
     private boolean inExercise = false;
-    private int currentStep,position,poor,good,perfect;
+    private int currentStep,position,poor,good;
     private boolean inLowState = false;
 
     // the correct step
@@ -87,7 +87,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_live,container,false);
         deviceAddress = null;
-        good = poor = perfect = 0;
+        good = poor = 0;
         currentStep = 0;
 
         // change to fragment argument
@@ -129,14 +129,12 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         pressureImageView[7] = view.findViewById(R.id.p7);
 
         // set the initial progress text and bar
-        pr = view.findViewById(R.id.perfect_text);
         g = view.findViewById(R.id.good_text);
         p = view.findViewById(R.id.poor_text);
         // set the initial progress text and bar
         tv = view.findViewById(R.id.progressText);
         grade = view.findViewById(R.id.grade);
         tv.setText(String.format("%d Steps", currentStep));
-        pr.setText(Integer.toString(perfect));
         g.setText(Integer.toString(good));
         p.setText(Integer.toString(poor));
         return view;
@@ -231,11 +229,6 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         getActivity().runOnUiThread(() -> {
             grade.setText(result);
             switch (result){
-                case "PERFECT":
-                    grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
-                    perfect+=1;
-                    Log.d(TAG, "updateProgress: p: " + perfect);
-                    break;
                 case "GOOD":
                     grade.setTextColor(getResources().getColor(R.color.colorSecondary));
                     good+=1;
@@ -247,7 +240,6 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
                     Log.d(TAG, "updateProgress: pr: " + poor);
             }
             tv.setText(String.format("%d Steps", currentStep));
-            pr.setText(Integer.toString(perfect));
             g.setText(Integer.toString(good));
             p.setText(Integer.toString(poor));
         });
@@ -326,11 +318,9 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
 
     private void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
         ArrayList<String> color_result = PressureColor.get_color(pressureData);
-        Collections.swap(color_result,0,5);
-        Collections.swap(color_result,2,4);
         for (int i=0; i < color_result.size(); i++){
             String color = color_result.get(i);
-            Log.d("hahahah", "updatePressureImageView: " + i);
+//            Log.d("hahahah", "updatePressureImageView: " + i);
             switch (color){
                 case "g":
                     pressureImageView[i].setImageResource(R.drawable.circle_grey);

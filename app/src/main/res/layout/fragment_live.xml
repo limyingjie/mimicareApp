@@ -52,20 +52,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <TextView
-        android:id="@+id/textView8"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Perfect"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView9"
-        app:layout_constraintEnd_toStartOf="@+id/textView9"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView9" />
-
-    <TextView
         android:id="@+id/textView9"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -75,7 +61,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/textView10"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressText" />
 
     <TextView
@@ -202,18 +188,6 @@
         app:layout_constraintStart_toStartOf="@id/feet"
         app:layout_constraintTop_toTopOf="@id/feet"
         app:layout_constraintVertical_bias="0.175" />
-
-    <TextView
-        android:id="@+id/perfect_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="0"
-        android:textColor="@color/colorText"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView8"
-        app:layout_constraintEnd_toEndOf="@+id/textView8"
-        app:layout_constraintStart_toStartOf="@+id/textView8" />
 
     <TextView
         android:id="@+id/good_text"

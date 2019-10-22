@@ -146,9 +146,6 @@ public abstract class WalkingActivity extends AppCompatActivity implements Servi
 
     protected void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
         ArrayList<String> color_result = PressureColor.get_color(pressureData);
-        // rearrange the pressure data due to misplacement of the sensor
-        Collections.swap(color_result,0,5);
-        Collections.swap(color_result,2,4);
         for (int i=0; i < color_result.size(); i++){
             String color = color_result.get(i);
             switch (color){

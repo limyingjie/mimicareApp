@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 public class StepChecker {
     private static int GOOD_THRESHOLD = 105;
-    private static int TOTAL_PRESSURE_DIFF_THRESHOLD = 45;
-    private static int marginPercentage = 30;
+    private static int TOTAL_PRESSURE_DIFF_THRESHOLD = 30;
+    private static int marginPercentage = 25;
 
     private int[] correctStepPressure;
     private int upperMargin;
@@ -18,7 +18,7 @@ public class StepChecker {
     public StepChecker(int[] correctStepPressure) {
         this.correctStepPressure = correctStepPressure;
         int totalCorrectStepPressure = calcTotalPressure(correctStepPressure);
-        double margin = totalCorrectStepPressure * marginPercentage;
+        double margin = totalCorrectStepPressure * ((double)marginPercentage / 100);
         upperMargin = (int) Math.ceil(totalCorrectStepPressure + margin);
         bottomMargin = (int) Math.floor(totalCorrectStepPressure - margin);
     }
@@ -35,8 +35,9 @@ public class StepChecker {
         if (totalPressure < peakTotalPressure - TOTAL_PRESSURE_DIFF_THRESHOLD) {
             // feet is already lifting off after its peak, so we grade that step;
             Log.d("step reading", Integer.toString(peakTotalPressure-totalPressure));
+            String result = grade(peakTotalPressure);
             peakTotalPressure = 0; // reset this value
-            String result = grade(peakStepReading);
+
 
             return result;
         }
@@ -92,13 +93,13 @@ public class StepChecker {
         return sum;
     }
 
-    private String grade(int[] step) {
-        int difference = 0;
-        for (int i = 0; i < correctStepPressure.length; i++) {
-            difference += Math.abs(step[i] - correctStepPressure[i]);
+    private String grade(int peak) {
+        /*int difference = 0;
+        for (int i = 0; i < step.length; i++) {
+            difference += step[i];
         }
         Log.d("StepChecker", "Difference: " + difference);
-
+        */
         String result;
 
         // check the total difference
@@ -108,7 +109,7 @@ public class StepChecker {
             result = "POOR";
         }*/
 
-        if (difference <= upperMargin && difference >= bottomMargin){
+        if (peak <= upperMargin && peak >= bottomMargin){
             result = "GOOD";
         }
         else {

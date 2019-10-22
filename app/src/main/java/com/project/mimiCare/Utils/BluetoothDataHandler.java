@@ -24,6 +24,9 @@ public class BluetoothDataHandler {
             return null;
         }
 
+        // THESE TWO PINS ARE FAULTY AND HAVE GHOST READINGS
+        lineData[0] = 0;
+        lineData[2] = 0;
         return lineData;
     }
 }
