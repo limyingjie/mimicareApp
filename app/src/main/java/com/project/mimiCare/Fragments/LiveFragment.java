@@ -12,13 +12,11 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
@@ -38,8 +36,6 @@ import com.project.mimiCare.Utils.StepChecker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 public class LiveFragment extends Fragment implements ServiceConnection, SerialListener {
     private static final String TAG = "LiveActivity";
@@ -230,7 +226,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             grade.setText(result);
             switch (result){
                 case "GOOD":
-                    grade.setTextColor(getResources().getColor(R.color.colorSecondary));
+                    grade.setTextColor(getResources().getColor(R.color.colorAlternateVariant));
                     good+=1;
                     Log.d(TAG, "updateProgress: g: " + good);
                     break;
@@ -253,21 +249,18 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
             return;
         }
 
-        // on the ground
-        boolean nowInLowState = !isAllZero(pressureData);
-        if (nowInLowState) {
-            String result = stepChecker.checkStep(pressureData);
-            if (result != null){
-                if (!Constants.IS_MOCKING){
-                    write(result);
-                    restart();
-                }
-                currentStep += 1;
-                updateProgress(result);
+        String result = stepChecker.checkStep(pressureData);
+        if (result != null){
+            if (!Constants.IS_MOCKING){
+                write(result);
+                restart();
             }
+            currentStep += 1;
+            updateProgress(result);
         }
+
         getActivity().runOnUiThread(()->{
-            updatePressureImageView(pressureData,nowInLowState);
+            updatePressureImageView(pressureData);
         });
     }
 
@@ -316,7 +309,7 @@ public class LiveFragment extends Fragment implements ServiceConnection, SerialL
         Log.d("L", str);
     }
 
-    private void updatePressureImageView(int[] pressureData, Boolean in_low_state) {
+    private void updatePressureImageView(int[] pressureData) {
         ArrayList<String> color_result = PressureColor.get_color(pressureData);
         for (int i=0; i < color_result.size(); i++){
             String color = color_result.get(i);
